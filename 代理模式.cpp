@@ -72,8 +72,7 @@ namespace ns1
 
 namespace ns2
 {
-    // 缓存 / 缓冲代理（Cache Proxy）范例
-    vector<string> g_fileItemList; // 包含头文件“vector”和“string”
+    vector<string> g_fileItemList;
 
     // 抽象主题
     class ReadInfo
@@ -87,9 +86,9 @@ namespace ns2
     class ReadInfoFromFile : public ReadInfo
     {
     public:
-        virtual void read() // 从文件中读取信息（读取test.txt的内容）
+        void read() override
         {
-            ifstream fin("14.cpp"); // 包含头文件“fstream”，ifstream(文件输入流)用于从磁盘读文件到内存
+            ifstream fin(".vscode/settings.json"); // 文件中读取信息
             if (!fin)
             {
                 cout << "failure" << endl;
@@ -109,29 +108,29 @@ namespace ns2
     // 代理主题
     class ReadInfoProxy : public ReadInfo
     {
+        bool m_loaded = false; // false表示还没有从文件中读出数据到内存
     public:
-        virtual void read()
+        void read() override
         {
             if (!m_loaded)
             {
                 // 没有从文件中载入信息，则载入
                 m_loaded = true; // 标记信息已经从文件中被载入进来，这样下次再获取这些数据时就不需要再去读文件了
-                ReadInfoFromFile *rf = new ReadInfoFromFile();
+
+                auto rf = make_shared<ReadInfoFromFile>();
                 rf->read(); // 将文件中的数据读入全局容器g_fileItemList中
-                delete rf;  // 释放资源
+
                 cout << "read from file: " << endl;
             }
             else
             {
                 cout << "read from cache: " << endl;
             }
+
             // 现在数据一定在g_fileItemList中，开始显示
             for (auto iter = g_fileItemList.begin(); iter != g_fileItemList.end(); ++iter)
                 cout << *iter << endl;
         }
-
-    private:
-        bool m_loaded = false; // false表示还没有从文件中读出数据到内存
     };
 }
 
