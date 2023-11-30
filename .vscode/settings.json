@@ -55,6 +55,8 @@
         "xtr1common": "cpp",
         "unordered_map": "cpp",
         "list": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "xtree": "cpp",
+        "stop_token": "cpp"
     }
 }
