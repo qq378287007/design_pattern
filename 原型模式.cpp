@@ -2,6 +2,8 @@
 #include <memory>
 using namespace std;
 
+// 对象克隆
+
 namespace ns1
 {
     class Monster // 怪物
@@ -13,8 +15,6 @@ namespace ns1
     public:
         Monster(int life, int magic, int attack) : m_life(life), m_magic(magic), m_attack(attack) {}
         virtual ~Monster() {}
-
-    public:
         virtual shared_ptr<Monster> clone() const = 0; // 对象克隆
     };
 
@@ -95,15 +95,16 @@ int main()
 #if 0
     using namespace ns1;
     shared_ptr<Monster> myPropMecMonster = make_shared<M_Mechanic>(400, 0, 110); // 创建一只机械类怪物对象作为原型对象以用于克隆目的
-    auto p_CloneObj1 = myPropMecMonster->clone();                                // 使用原型对象克隆出新的机械类怪物对象
+    shared_ptr<Monster> p_CloneObj1 = myPropMecMonster->clone();                 // 使用原型对象克隆出新的机械类怪物对象
 
-    auto pmyPropEleMonster = make_shared<M_Element>(200, 80, 100);
-    auto p_CloneObj2 = pmyPropEleMonster->clone();
+    shared_ptr<Monster> pmyPropEleMonster = make_shared<M_Element>(200, 80, 100);
+    shared_ptr<Monster> p_CloneObj2 = pmyPropEleMonster->clone();
 #endif
+
 #if 1
     using namespace ns1;
-    auto pMonsterObj = make_shared<M_Element>(200, 80, 100);
-    auto copyObj = CreateMonster(pMonsterObj);
+    shared_ptr<Monster> pMonsterObj = make_shared<M_Element>(200, 80, 100);
+    shared_ptr<Monster> copyObj = CreateMonster(pMonsterObj);
 #endif
 
     cout << "Over!\n";
