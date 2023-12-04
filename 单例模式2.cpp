@@ -8,6 +8,11 @@ namespace ns1
 {
     class GameConfig
     {
+        static GameConfig *m_instance1;
+        // static shared_ptr<GameConfig> GameConfig::m_instance3;
+
+        //static mutex m_mutex;
+
     private:
         GameConfig(){};
         GameConfig(const GameConfig &tmpobj);
@@ -15,25 +20,38 @@ namespace ns1
         ~GameConfig(){};
 
     public:
-        static GameConfig *getInstance()
+        static GameConfig *getInstance1()
         {
-            if (m_instance == nullptr)
-                m_instance = new GameConfig();
-            return m_instance;
-        } /*
-         static shared_ptr<GameConfig> getInstance2()
-         {
-             if (m_instance2 == nullptr)
-                 m_instance2 = make_shared<GameConfig>();
-             return m_instance2;
-         }*/
+            //lock_guard<mutex> l(m_mutex);
+            
+            if (m_instance1 == nullptr)
+            {
 
-    private:
-        static GameConfig *m_instance;
-        // static shared_ptr<GameConfig> m_instance2;
+                m_instance1 = new GameConfig();
+            }
+
+            return m_instance1;
+        }
+        static GameConfig *getInstance2()
+        {
+            static GameConfig m_instance2;
+            return &m_instance2;
+        }
+        /*
+        static shared_ptr<GameConfig> getInstance3()
+        {
+            if (m_instance3 == nullptr)
+                m_instance3 = make_shared<GameConfig>();
+            return m_instance3;
+
+            // static shared_ptr<GameConfig> m_instance3 = make_shared<GameConfig>();
+            // return m_instance3;
+        }
+        */
     };
-    GameConfig *GameConfig::m_instance = nullptr;
-    // shared_ptr<GameConfig> GameConfig::m_instance2 = nullptr;
+    GameConfig *GameConfig::m_instance1 = nullptr;
+    // shared_ptr<GameConfig> GameConfig::m_instance3 = nullptr;
+    //mutex GameConfig::m_mutex;
 }
 
 // 懒汉式
@@ -235,13 +253,13 @@ namespace ns5
 
 int main()
 {
-#if 0
+#if 1
     using namespace ns1;
-    GameConfig *g_gc = GameConfig::getInstance();
-    GameConfig *g_gc2 = GameConfig::getInstance();
+    GameConfig *g_gc1 = GameConfig::getInstance1();
+    GameConfig *g_gc2 = GameConfig::getInstance2();
 #endif
 
-#if 1
+#if 0
     using namespace ns2;
     // GameConfig g_config;//error
     GameConfig *g_gc = GameConfig::getInstance();
