@@ -18,18 +18,18 @@ namespace ns1
     {
     public:
         virtual ~Medicine() {}
-        virtual string getMdcName() = 0; // 药品名称
-        virtual float getPrice() = 0;    // 药品总价格，单位：元
+        virtual string getMdcName() const = 0; // 药品名称
+        virtual float getPrice() const = 0;    // 药品总价格，单位：元
     };
 
     class M_asplcrp : public Medicine // 药品：阿司匹林肠溶片
     {
     public:
-        string getMdcName() override
+        string getMdcName() const override
         {
             return "Aspirin enteric-coated tablets";
         }
-        float getPrice() override
+        float getPrice() const override
         {
             return 46.8f; // 为简化代码，直接给出药品总价而不单独强调药品数量了，比如该药品医生给开了两盒，一盒是23.4，那么这里直接返回两盒的价格
         }
@@ -38,11 +38,11 @@ namespace ns1
     class M_fftdnhsp : public Medicine // 药品：氟伐他汀钠缓释片
     {
     public:
-        string getMdcName() override
+        string getMdcName() const override
         {
             return "Fluvastatin sodium sustained-release tablets";
         }
-        float getPrice() override
+        float getPrice() const override
         {
             return 111.3f; // 三盒的价格
         }
@@ -51,11 +51,11 @@ namespace ns1
     class M_dlx : public Medicine // 药品：黛力新
     {
     public:
-        string getMdcName() override
+        string getMdcName() const override
         {
             return "Deanxit";
         }
-        float getPrice() override
+        float getPrice() const override
         {
             return 122.0f; // 两盒的价格
         }
@@ -262,29 +262,29 @@ namespace ns3
         virtual void Accept(shared_ptr<Visitor> &pvisitor) { pvisitor->Visit(this); }
 
     public:
-        virtual string getMdcName() = 0; // 药品名称
-        virtual float getPrice() = 0;    // 药品总价格，单位：元
+        virtual string getMdcName() const = 0; // 药品名称
+        virtual float getPrice() const = 0;    // 药品总价格，单位：元
     };
 
     class M_asplcrp : public Medicine // 药品：阿司匹林肠溶片
     {
     public:
-        string getMdcName() override { return "Aspirin enteric-coated tablets"; }
-        float getPrice() override { return 46.8f; }
+        string getMdcName() const override { return "Aspirin enteric-coated tablets"; }
+        float getPrice() const override { return 46.8f; }
     };
 
     class M_fftdnhsp : public Medicine // 药品：氟伐他汀钠缓释片
     {
     public:
-        string getMdcName() override { return "Fluvastatin sodium sustained-release tablets"; }
-        float getPrice() override { return 111.3f; }
+        string getMdcName() const override { return "Fluvastatin sodium sustained-release tablets"; }
+        float getPrice() const override { return 111.3f; }
     };
 
     class M_dlx : public Medicine // 药品：黛力新
     {
     public:
-        string getMdcName() override { return "Deanxit"; }
-        float getPrice() override { return 122.0f; }
+        string getMdcName() const override { return "Deanxit"; }
+        float getPrice() const override { return 122.0f; }
     };
 
     class Visitor_SFRY : public Visitor // 收费人员访问者子类
@@ -357,8 +357,8 @@ int main()
 #endif
 
 #if 1
-    //using namespace ns2;
-    using namespace ns3;
+    using namespace ns2;
+    //using namespace ns3;
     shared_ptr<Visitor> visitor_sf(new Visitor_SFRY()); // 收费人员访问者子类，里面承载着向我（患者）收费的算法
     shared_ptr<Medicine> mdc_asplcrp(new M_asplcrp());
     shared_ptr<Medicine> mdc_fftdnhsp(new M_fftdnhsp());
