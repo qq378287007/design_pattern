@@ -63,7 +63,7 @@ namespace ns1
                     // 处理怪物死亡后事宜比如怪物尸体定时消失等
                 }
                 break;
-            case MonS_Worr: // 目前怪物已经处于不安状态, 这说明怪物的血量 <=400 并且 >100
+            case MonS_Worr: // 目前怪物已经处于不安状态, 这说明怪物的血量<=400并且>100
                 if (m_life > 100)
                 {
                     cout << "monster " << power << " hurt, attact, help!" << endl;
@@ -110,14 +110,14 @@ namespace ns2
     {
     public:
         virtual ~MonsterStatus() {}
-        virtual void Attacked(int power, Monster *mainobj) = 0;
+        virtual void Attacked(int power, Monster *const mainobj) = 0;
     };
 
     class MonsterStatus_Feroc : public MonsterStatus // 凶悍状态类
     {
     public:
         // 传递进来的参数是否有必要使用, 开发者自行斟酌
-        void Attacked(int power, Monster *mainobj) override
+        void Attacked(int power, Monster *const mainobj) override
         {
             cout << "MonsterStatus_Feroc, attackt!" << endl;
             // 处理其他动作逻辑比如反击
@@ -127,7 +127,7 @@ namespace ns2
     class MonsterStatus_Worr : public MonsterStatus // 不安状态类
     {
     public:
-        void Attacked(int power, Monster *mainobj) override
+        void Attacked(int power, Monster *const mainobj) override
         {
             cout << "MonsterStatus_Worr, attackt, help!" << endl;
             // 处理其他动作逻辑比如反击和不停的呼唤支援
@@ -137,7 +137,7 @@ namespace ns2
     class MonsterStatus_Fear : public MonsterStatus // 恐惧状态类
     {
     public:
-        void Attacked(int power, Monster *mainobj) override
+        void Attacked(int power, Monster *const mainobj) override
         {
             cout << "MonsterStatus_Fear, run!" << endl;
             // 处理其他动作逻辑比如逃跑
@@ -147,7 +147,7 @@ namespace ns2
     class MonsterStatus_Dead : public MonsterStatus // 死亡状态类
     {
     public:
-        void Attacked(int power, Monster *mainobj) override
+        void Attacked(int power, Monster *const mainobj) override
         {
             cout << "dead!" << endl;
             // 处理怪物死亡后事宜比如怪物尸体定时消失等
@@ -243,31 +243,31 @@ namespace ns3
     {
     public:
         virtual ~MonsterStatus() {}
-        virtual void Attacked(int power, Monster *mainobj) = 0;
+        virtual void Attacked(int power, Monster *const mainobj) = 0;
     };
 
     class MonsterStatus_Feroc : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
     };
 
     class MonsterStatus_Worr : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
     };
 
     class MonsterStatus_Fear : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
     };
 
     class MonsterStatus_Dead : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
     };
 
     class Monster // 怪物类定义
@@ -288,7 +288,7 @@ namespace ns3
         void setCurrentState(const shared_ptr<MonsterStatus> &pState) { m_pState = pState; } // 设置怪物当前状态
     };
 
-    void MonsterStatus_Feroc::Attacked(int power, Monster *mainobj) // 凶悍状态类
+    void MonsterStatus_Feroc::Attacked(int power, Monster *const mainobj) // 凶悍状态类
     {
         int orglife = mainobj->GetLife(); // 暂存原来的怪物血量值用于后续比较
         if ((orglife - power) > 400)      // 怪物原来处于凶悍状态, 现在依旧处于凶悍状态
@@ -302,11 +302,12 @@ namespace ns3
         {
             // 不管下个状态是啥, 总之不会是凶悍状态, 只可能是不安、恐惧、死亡状态之一, 先无条件转到不安状态去（不安状态中会进行再次判断）
             mainobj->setCurrentState(make_shared<MonsterStatus_Worr>());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Worr::Attacked(int power, Monster *mainobj) // 不安状态类
+    void MonsterStatus_Worr::Attacked(int power, Monster *const mainobj) // 不安状态类
     {
         int orglife = mainobj->GetLife();
         if ((orglife - power) > 100) // 怪物原来处于不安状态, 现在依旧处于不安状态
@@ -320,11 +321,12 @@ namespace ns3
         {
             // 不管下个状态是啥, 总之不会是凶悍和不安状态, 只可能是恐惧、死亡状态之一, 先无条件转到恐惧状态去
             mainobj->setCurrentState(make_shared<MonsterStatus_Fear>());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Fear::Attacked(int power, Monster *mainobj) // 恐惧状态类
+    void MonsterStatus_Fear::Attacked(int power, Monster *const mainobj) // 恐惧状态类
     {
         int orglife = mainobj->GetLife();
         if ((orglife - power) > 0) // 怪物原来处于恐惧状态, 现在依旧处于恐惧状态
@@ -338,11 +340,12 @@ namespace ns3
         {
             // 不管下个状态是啥, 总之不会是凶悍、不安和恐惧状态, 只可能是死亡状态
             mainobj->setCurrentState(make_shared<MonsterStatus_Dead>());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Dead::Attacked(int power, Monster *mainobj) // 死亡状态类
+    void MonsterStatus_Dead::Attacked(int power, Monster *const mainobj) // 死亡状态类
     {
         int orglife = mainobj->GetLife();
         if (orglife > 0)
@@ -362,13 +365,13 @@ namespace ns4
     {
     public:
         virtual ~MonsterStatus() {}
-        virtual void Attacked(int power, Monster *mainobj) = 0;
+        virtual void Attacked(int power, Monster *const mainobj) = 0;
     };
 
     class MonsterStatus_Feroc : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
 
     public:
         static shared_ptr<MonsterStatus> getInstance()
@@ -381,7 +384,7 @@ namespace ns4
     class MonsterStatus_Worr : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
 
     public:
         static shared_ptr<MonsterStatus> getInstance()
@@ -394,7 +397,7 @@ namespace ns4
     class MonsterStatus_Fear : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
 
     public:
         static shared_ptr<MonsterStatus> getInstance()
@@ -407,7 +410,7 @@ namespace ns4
     class MonsterStatus_Dead : public MonsterStatus
     {
     public:
-        void Attacked(int power, Monster *mainobj) override;
+        void Attacked(int power, Monster *const mainobj) override;
 
     public:
         static shared_ptr<MonsterStatus> getInstance()
@@ -435,7 +438,7 @@ namespace ns4
         void setCurrentState(const shared_ptr<MonsterStatus> &pState) { m_pState = pState; } // 设置怪物当前状态
     };
 
-    void MonsterStatus_Feroc::Attacked(int power, Monster *mainobj) // 凶悍状态类
+    void MonsterStatus_Feroc::Attacked(int power, Monster *const mainobj) // 凶悍状态类
     {
         int orglife = mainobj->GetLife(); // 暂存原来的怪物血量值用于后续比较
         if ((orglife - power) > 400)      // 怪物原来处于凶悍状态, 现在依旧处于凶悍状态
@@ -449,11 +452,12 @@ namespace ns4
         {
             // 不管下个状态是啥, 总之不会是凶悍状态, 只可能是不安、恐惧、死亡状态之一, 先无条件转到不安状态去（不安状态中会进行再次判断）
             mainobj->setCurrentState(MonsterStatus_Worr::getInstance());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Worr::Attacked(int power, Monster *mainobj) // 不安状态类
+    void MonsterStatus_Worr::Attacked(int power, Monster *const mainobj) // 不安状态类
     {
         int orglife = mainobj->GetLife();
         if ((orglife - power) > 100) // 怪物原来处于不安状态, 现在依旧处于不安状态
@@ -467,11 +471,12 @@ namespace ns4
         {
             // 不管下个状态是啥, 总之不会是凶悍和不安状态, 只可能是恐惧、死亡状态之一, 先无条件转到恐惧状态去
             mainobj->setCurrentState(MonsterStatus_Fear::getInstance());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Fear::Attacked(int power, Monster *mainobj) // 恐惧状态类
+    void MonsterStatus_Fear::Attacked(int power, Monster *const mainobj) // 恐惧状态类
     {
         int orglife = mainobj->GetLife();
         if ((orglife - power) > 0) // 怪物原来处于恐惧状态, 现在依旧处于恐惧状态
@@ -485,11 +490,12 @@ namespace ns4
         {
             // 不管下个状态是啥, 总之不会是凶悍、不安和恐惧状态, 只可能是死亡状态
             mainobj->setCurrentState(MonsterStatus_Dead::getInstance());
-            mainobj->getCurrentState()->Attacked(power, mainobj);
+            // mainobj->getCurrentState()->Attacked(power, mainobj);
+            mainobj->Attacked(power);
         }
     }
 
-    void MonsterStatus_Dead::Attacked(int power, Monster *mainobj) // 死亡状态类
+    void MonsterStatus_Dead::Attacked(int power, Monster *const mainobj) // 死亡状态类
     {
         int orglife = mainobj->GetLife();
         if (orglife > 0)
