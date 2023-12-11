@@ -46,9 +46,10 @@ namespace ns1
     {
     public:
         virtual ~myCotainer() {}
-        virtual myIter<T> *CreateIterator() = 0; // 创建迭代器
-        virtual T &getItem(int index) = 0;       // 获取当前元素
-        virtual int getSize() const = 0;         // 容器中元素数量
+        // virtual myIter<T> *CreateIterator() = 0; // 创建迭代器
+        virtual shared_ptr<myIter<T>> CreateIterator() = 0; // 创建迭代器
+        virtual T &getItem(int index) = 0;                  // 获取当前元素
+        virtual int getSize() const = 0;                    // 容器中元素数量
     };
 
     template <typename T> // 具体迭代器类模板，针对10元素数组
@@ -76,15 +77,10 @@ namespace ns1
             for (int i = 0; i < 10; ++i)
                 m_elem[i] = i;
         }
-        virtual myIter<T> *CreateIterator()
-        {
-            // 工厂模式，注意实参传递进去的是该容器的指针this
-            return new myVectorIter<T>(this); // 要考虑在哪里释放的问题
-        }
-
+        // myIter<T> *CreateIterator() override { return new myVectorIter<T>(this); }
+        shared_ptr<myIter<T>> CreateIterator() override { return make_shared<myVectorIter<T>>(this); }
         T &getItem(int index) override { return m_elem[index]; }
-
-        virtual int getSize() const override { return 10; }
+        int getSize() const override { return 10; }
     };
 }
 
@@ -95,16 +91,14 @@ int main()
     msgVector.push_back(1); // 末尾插入1，vector中内容：1
     msgVector.push_back(2); // 末尾插入2，vector中内容：1,2
     msgVector.push_back(3); // 末尾插入3，vector中内容：1,2,3
-    for (vector<int>::iterator pos = msgVector.begin(); pos != msgVector.end(); ++pos)
+    for (vector<int>::const_iterator pos = msgVector.cbegin(); pos != msgVector.cend(); ++pos)
         cout << *pos << endl;
-
     cout << "-------------------" << endl;
-
     list<int> msgList;
     msgList.push_back(1);  // 末尾插入1，list中内容：1
     msgList.push_front(2); // 开头插入2，list中内容：2，1
     msgList.push_back(3);  // 末尾插入3，list中内容：2，1，3
-    for (list<int>::iterator pos = msgList.begin(); pos != msgList.end(); ++pos)
+    for (list<int>::const_iterator pos = msgList.cbegin(); pos != msgList.cend(); ++pos)
         cout << *pos << endl;
 #endif
 

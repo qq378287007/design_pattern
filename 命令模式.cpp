@@ -17,15 +17,8 @@ namespace ns1
     class Cook // 厨师类
     {
     public:
-        void cook_fish() // 做红烧鱼
-        {
-            cout << "fish" << endl;
-        }
-
-        void cook_meat() // 做锅包肉
-        {
-            cout << "meat" << endl;
-        }
+        void cook_fish() { cout << "fish" << endl; } // 做红烧鱼
+        void cook_meat() { cout << "meat" << endl; } // 做锅包肉
     };
 
     class Command // 厨师做的每样菜品对应的抽象类
@@ -78,8 +71,7 @@ namespace ns1
         }
         void Notify() // 服务员将所有便签一次性交到厨师手里让厨师开始按顺序做菜
         {
-            // 依次让厨师做每一道菜品
-            for (auto iter = m_commlist.cbegin(); iter != m_commlist.cend(); ++iter)
+            for (auto iter = m_commlist.cbegin(); iter != m_commlist.cend(); ++iter) // 依次让厨师做每一道菜品
                 (*iter)->Execute();
         }
     };
@@ -90,15 +82,8 @@ namespace ns2
     class Cook // 厨师类
     {
     public:
-        void cook_fish() // 做红烧鱼
-        {
-            cout << "fish" << endl;
-        }
-
-        void cook_meat() // 做锅包肉
-        {
-            cout << "meat" << endl;
-        }
+        void cook_fish() { cout << "fish" << endl; } // 做红烧鱼
+        void cook_meat() { cout << "meat" << endl; } // 做锅包肉
     };
 
     class Command // 厨师做的每样菜品对应的抽象类
@@ -144,15 +129,8 @@ namespace ns3
     class Cook // 厨师类
     {
     public:
-        void cook_fish() // 做红烧鱼
-        {
-            cout << "fish" << endl;
-        }
-
-        void cook_meat() // 做锅包肉
-        {
-            cout << "meat" << endl;
-        }
+        void cook_fish() { cout << "fish" << endl; } // 做红烧鱼
+        void cook_meat() { cout << "meat" << endl; } // 做锅包肉
     };
 
     class Command // 厨师做的每样菜品对应的抽象类
@@ -199,7 +177,7 @@ namespace ns3
         }
         virtual void Execute()
         {
-            for (auto iter = m_commlist.begin(); iter != m_commlist.end(); ++iter)
+            for (auto iter = m_commlist.cbegin(); iter != m_commlist.cend(); ++iter)
                 (*iter)->Execute();
         }
     };
@@ -215,7 +193,10 @@ namespace ns3
                 m_pcommand->Execute();
         }
     };
+}
 
+namespace ns4
+{
     class TC
     {
     public:
@@ -228,7 +209,7 @@ namespace ns3
         int operator()(int tv1, int tv2)
         {
             cout << "TC::operator(int tv1, int tv2), tv1=" << tv1 << ", tv2=" << tv2 << endl;
-            return 1;
+            return tv1 + tv2;
         }
     };
 
@@ -298,7 +279,7 @@ int main()
     pwaitersx2->Notify(); // 做锅包肉
 #endif
 
-#if 1
+#if 0
     using namespace ns3;
     shared_ptr<Cook> cook(new Cook());
     shared_ptr<Command> pcmd1(new CommandFish(cook));
@@ -311,8 +292,8 @@ int main()
     pwaiter->Notify();
 #endif
 
-#if 0
-    using namespace ns3;
+#if 1
+    using namespace ns4;
     TC tc;
     tc(20); // 调用的是()操作符，这就是个可调用对象。等价于tc.operator()(20);
     cout << tc(30, 50) << endl;

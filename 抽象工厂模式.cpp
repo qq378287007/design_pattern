@@ -162,7 +162,7 @@ namespace ns1
     };
 }
 
-namespace _nmsp7
+namespace ns2
 {
     // 抽象工厂模式
     class Monster // 怪物父类
@@ -275,7 +275,7 @@ namespace _nmsp7
     };
 }
 
-namespace _nmsp8
+namespace ns3
 {
     // 抽象工厂模式
     class Body // 身体抽象类
@@ -465,6 +465,136 @@ namespace _nmsp8
     };
 }
 
+namespace ns4
+{
+
+    class Shape
+    {
+    public:
+        virtual ~Shape() = default;
+        virtual void draw() const = 0;
+    };
+
+    class Rectangle : public Shape
+    {
+    public:
+        void draw() const override
+        {
+            cout << "Inside Rectangle::draw() method." << endl;
+        }
+    };
+
+    class Square : public Shape
+    {
+    public:
+        void draw() const override
+        {
+            cout << "Inside Square::draw() method." << endl;
+        }
+    };
+
+    class Circle : public Shape
+    {
+    public:
+        void draw() const override
+        {
+            cout << "Inside Circle::draw() method." << endl;
+        }
+    };
+
+    class Color
+    {
+    public:
+        virtual ~Color() = default;
+        virtual void fill() const = 0;
+    };
+
+    class Red : public Color
+    {
+    public:
+        void fill() const override
+        {
+            cout << "Inside Red::fill() method." << endl;
+        }
+    };
+
+    class Green : public Color
+    {
+    public:
+        void fill() const override
+        {
+            cout << "Inside Green::fill() method." << endl;
+        }
+    };
+
+    class Blue : public Color
+    {
+    public:
+        void fill() const override
+        {
+            cout << "Inside Blue::fill() method." << endl;
+        }
+    };
+
+    class AbstractFactory
+    {
+    public:
+        virtual ~AbstractFactory() = default;
+        virtual shared_ptr<Shape> getShape(const string &shape) const = 0;
+        virtual shared_ptr<Color> getColor(const string &color) const = 0;
+    };
+
+    class ShapeFactory : public AbstractFactory
+    {
+    public:
+        shared_ptr<Shape> getShape(const string &shapeType) const override
+        {
+            if (shapeType == "CIRCLE")
+                return make_shared<Circle>();
+            else if (shapeType == "RECTANGLE")
+                return make_shared<Rectangle>();
+            else if (shapeType == "SQUARE")
+                return make_shared<Square>();
+            else
+                return nullptr;
+        }
+        shared_ptr<Color> getColor(const string &color) const override
+        {
+            return nullptr;
+        }
+    };
+
+    class ColorFactory : public AbstractFactory
+    {
+    public:
+        shared_ptr<Shape> getShape(const string &shapeType) const override
+        {
+            return nullptr;
+        }
+        shared_ptr<Color> getColor(const string &color) const override
+        {
+            if (color == "RED")
+                return make_shared<Red>();
+            else if (color == "GREEN")
+                return make_shared<Green>();
+            else if (color == "BLUE")
+                return make_shared<Blue>();
+            else
+                return nullptr;
+        }
+    };
+
+    shared_ptr<AbstractFactory> getFactory(const string &choice)
+    {
+        if (choice == "SHAPE")
+            return make_shared<ShapeFactory>();
+        else if (choice == "COLOR")
+            return make_shared<ColorFactory>();
+        else
+            return nullptr;
+    }
+}
+
 int main()
 {
 #if 1
@@ -479,9 +609,10 @@ int main()
 
     // 抽象工厂，类模板实现
 #if 0
-        _nmsp7::Monster *pM1 = _nmsp7::M_Factory<_nmsp7::M_Element_Town>::createMonster();             // 创建山脉地区的元素类怪物
-        _nmsp7::Monster *pM2 = _nmsp7::M_Factory<_nmsp7::M_Undead_Town>::createMonster();              // 创建城镇的亡灵类怪物
-        _nmsp7::Monster *pM3 = _nmsp7::M_Factory<_nmsp7::M_Mechanic_Town>::createMonster(400, 0, 110); // 创建城镇的机械类怪物
+    using namespace ns2;
+        Monster *pM1 = M_Factory<M_Element_Town>::createMonster();             // 创建山脉地区的元素类怪物
+        Monster *pM2 = M_Factory<M_Undead_Town>::createMonster();              // 创建城镇的亡灵类怪物
+        Monster *pM3 = M_Factory<M_Mechanic_Town>::createMonster(400, 0, 110); // 创建城镇的机械类怪物
 
         // 释放怪物
         delete pM1;
@@ -491,27 +622,28 @@ int main()
 
     // 抽象工厂模式2
 #if 0
+    using namespace ns3;
         // 创建第一个芭比娃娃------------------------------------
         //(1)创建一个中国工厂
-        _nmsp8::AbstractFactory *pChinaFactory = new _nmsp8::ChinaFactory();
+        AbstractFactory *pChinaFactory = new ChinaFactory();
         //(2)创建中国产的各种部件
-        _nmsp8::Body *pChinaBody = pChinaFactory->createBody();
-        _nmsp8::Clothes *pChinaClothes = pChinaFactory->createClothes();
-        _nmsp8::Shoes *pChinaShoes = pChinaFactory->createShoes();
+        Body *pChinaBody = pChinaFactory->createBody();
+        Clothes *pChinaClothes = pChinaFactory->createClothes();
+        Shoes *pChinaShoes = pChinaFactory->createShoes();
         //(3)创建芭比娃娃
-        _nmsp8::BarbieDoll *pbd1obj = new _nmsp8::BarbieDoll(pChinaBody, pChinaClothes, pChinaShoes);
+        BarbieDoll *pbd1obj = new BarbieDoll(pChinaBody, pChinaClothes, pChinaShoes);
         pbd1obj->Assemble(); // 组装芭比娃娃
 
         // 创建第二个芭比娃娃------------------------------------
         //(1)创建另外两个工厂：日本工厂，美国工厂
-        _nmsp8::AbstractFactory *pJapanFactory = new _nmsp8::JapanFactory();
-        _nmsp8::AbstractFactory *pAmericaFactory = new _nmsp8::AmericaFactory();
+        AbstractFactory *pJapanFactory = new JapanFactory();
+        AbstractFactory *pAmericaFactory = new AmericaFactory();
         //(2)创建中国产的身体部件，日本产的衣服部件，美国产的鞋子部件
-        _nmsp8::Body *pChinaBody2 = pChinaFactory->createBody();
-        _nmsp8::Clothes *pJapanClothes = pJapanFactory->createClothes();
-        _nmsp8::Shoes *pAmericaShoes = pAmericaFactory->createShoes();
+        Body *pChinaBody2 = pChinaFactory->createBody();
+        Clothes *pJapanClothes = pJapanFactory->createClothes();
+        Shoes *pAmericaShoes = pAmericaFactory->createShoes();
         //(3)创建芭比娃娃
-        _nmsp8::BarbieDoll *pbd2obj = new _nmsp8::BarbieDoll(pChinaBody2, pJapanClothes, pAmericaShoes);
+        BarbieDoll *pbd2obj = new BarbieDoll(pChinaBody2, pJapanClothes, pAmericaShoes);
         pbd2obj->Assemble(); // 组装芭比娃娃
 
         delete pbd1obj;
@@ -526,6 +658,25 @@ int main()
         delete pChinaBody2;
         delete pAmericaFactory;
         delete pJapanFactory;
+#endif
+
+#if 0
+    using namespace ns4;
+        auto shapeFactory = getFactory("SHAPE");
+    auto shape1 = shapeFactory->getShape("CIRCLE");
+    shape1->draw();
+    auto shape2 = shapeFactory->getShape("RECTANGLE");
+    shape2->draw();
+    auto shape3 = shapeFactory->getShape("SQUARE");
+    shape3->draw();
+
+    auto colorFactory = getFactory("COLOR");
+    auto color1 = colorFactory->getColor("RED");
+    color1->fill();
+    auto color2 = colorFactory->getColor("GREEN");
+    color2->fill();
+    auto color3 = colorFactory->getColor("BLUE");
+    color3->fill();
 #endif
 
     cout << "Over!\n";
