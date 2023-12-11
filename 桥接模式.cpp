@@ -13,9 +13,10 @@ namespace ns1
 {
     class Image // 图像显示相关类
     {
+        virtual char *parsefile(const char *pfilename, int &iLen) = 0; // 文件名决定文件格式，不同读取和处理代码, 返回二进制数据格式
+
     public:
         virtual ~Image() {}
-        // 根据pData（缓冲区）中的内容以及iDataLen所指示的缓冲区的长度，将这些数据显示出来
         void draw(const char *pfilename)
         {
             int iLen = 0;
@@ -23,20 +24,14 @@ namespace ns1
             if (iLen > 0)
             {
                 cout << "Displays the image data in the buffer pointed by pData" << endl;
-                //......
                 delete pData; // 模拟代码中因为pData的内存是new出来的，这里需要释放该内存
             }
         }
-
-    private:
-        virtual char *parsefile(const char *pfilename, int &iLen) = 0; // 根据文件名分析文件内容，每个子类因为图像文件格式不同，会有不同的读取和处理代码
     };
 
     class Image_png : public Image // 处理png格式图像文件的显示
     {
-    private:
-        // 读取png文件内容并进行解析，最终整理成统一的二进制数据格式返回
-        char *parsefile(const char *pfilename, int &iLen) override
+        char *parsefile(const char *pfilename, int &iLen) override // 读取png文件内容并进行解析
         {
             // 以下是模拟代码：模拟从图像文件中读取到了数据，最终转换成了100个字节的数据格式（事先约定好的格式规范）并返回
             cout << "Start analyzing the data in the png file and put the analysis results in pData";
@@ -84,7 +79,6 @@ namespace ns2
         void draw(char *pData, int iLen) override
         {
             cout << "Display the image data in the buffer pointed by pData under Windows operating system" << endl;
-            //...具体处理代码略
         }
     };
 
@@ -94,7 +88,6 @@ namespace ns2
         void draw(char *pData, int iLen) override
         {
             cout << "Display the image data in the buffer pointed by pData under Linux operating system" << endl;
-            //...具体处理代码略
         }
     };
 
@@ -104,7 +97,6 @@ namespace ns2
         void draw(char *pData, int iLen) override
         {
             cout << "Display the image data in the buffer pointed by pData under Mac operating system" << endl;
-            //...具体处理代码略
         }
     };
 
@@ -115,13 +107,13 @@ namespace ns2
     public:
         virtual ~ImageFormat() {}
         ImageFormat(const shared_ptr<ImageOS> &pimgos) : m_pImgOS(pimgos) {}
-        virtual void parsefile(const char *pfilename) = 0; // 根据文件名分析文件内容，每个子类因为图像文件格式不同，会有不同的读取和处理代码
+        virtual void parsefile(const char *pfilename) = 0; // 文件名, 文件格式，不同读取和处理代码
     };
 
     class Image_png : public ImageFormat // png格式的图像文件
     {
     public:
-        Image_png(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {} // 构造函数
+        Image_png(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {}
         void parsefile(const char *pfilename) override
         {
             cout << "Start analyzing the data in the png file and put the analysis results in pData, ";
@@ -129,8 +121,6 @@ namespace ns2
             int iLen = 100;
             char *presult = new char[iLen];
             m_pImgOS->draw(presult, iLen);
-
-            // 释放资源
             delete presult;
         }
     };
@@ -138,22 +128,20 @@ namespace ns2
     class Image_jpg : public ImageFormat // jpg格式的图像文件
     {
     public:
-        Image_jpg(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {} // 构造函数
+        Image_jpg(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {}
         void parsefile(const char *pfilename) override
         {
             cout << "Start analyzing the data in the jpg file and put the analysis results in pData, ";
-            //......
         }
     };
 
     class Image_bmp : public ImageFormat // bmp格式的图像文件
     {
     public:
-        Image_bmp(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {} // 构造函数
+        Image_bmp(const shared_ptr<ImageOS> &pimgos) : ImageFormat(pimgos) {}
         void parsefile(const char *pfilename) override
         {
             cout << "Start analyzing the data in the bmp file and put the analysis results in pData, ";
-            //......
         }
     };
 }

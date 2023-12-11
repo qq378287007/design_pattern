@@ -22,23 +22,10 @@ namespace ns1
     class LogToFile // 日志文件操作相关类
     {
     public:
-        void initfile()
-        {
-            // 做日志文件初始化工作，比如打开文件等等
-        }
-        void writetofile(const char *pcontent)
-        {
-            // 将日志内容写入文件
-        }
-        void readfromfile()
-        {
-            // 从日志中读取一些信息
-        }
-        void closefile()
-        {
-            // 关闭日志文件
-        }
-        //......可能还有很多其他成员函数，略
+        void initfile() {}                        // 做日志文件初始化工作，比如打开文件等等
+        void writetofile(const char *pcontent) {} // 将日志内容写入文件
+        void readfromfile() {}                    // 从日志中读取一些信息
+        void closefile() {}                       // 关闭日志文件
     };
 }
 
@@ -47,22 +34,10 @@ namespace ns2
     class LogToDatabase // 日志操作相关类（数据库版本）
     {
     public:
-        void initdb()
-        {
-            // 连接数据库，做一些基本的数据库连接设置等
-        }
-        void writetodb(const char *pcontent)
-        {
-            // 将日志内容写入数据库
-        }
-        void readfromdb()
-        {
-            // 从数据库中读取一些日志信息
-        }
-        void closedb()
-        {
-            // 关闭到数据库的连接
-        }
+        void initdb() {}                        // 连接数据库，做一些基本的数据库连接设置等
+        void writetodb(const char *pcontent) {} // 将日志内容写入数据库
+        void readfromdb() {}                    // 从数据库中读取一些日志信息
+        void closedb() {}                       // 关闭到数据库的连接
     };
 }
 
@@ -71,23 +46,10 @@ namespace ns3
     class LogToFile // 日志文件操作相关类
     {
     public:
-        void initfile()
-        {
-            // 做日志文件初始化工作，比如打开文件等等
-        }
-        void writetofile(const char *pcontent)
-        {
-            // 将日志内容写入文件
-        }
-        void readfromfile()
-        {
-            // 从日志中读取一些信息
-        }
-        void closefile()
-        {
-            // 关闭日志文件
-        }
-        //......可能还有很多其他成员函数，略
+        void initfile() {}                        // 做日志文件初始化工作，比如打开文件等等
+        void writetofile(const char *pcontent) {} // 将日志内容写入文件
+        void readfromfile() {}                    // 从日志中读取一些信息
+        void closefile() {}                       // 关闭日志文件
     };
 
     class LogToDatabase
@@ -106,11 +68,10 @@ namespace ns3
         shared_ptr<LogToFile> m_pfile;
 
     public:
-        LogAdapter(const shared_ptr<LogToFile> &pfile) : m_pfile(pfile) {} // 形参是老接口所属类
+        LogAdapter(const shared_ptr<LogToFile> &pfile = make_shared<LogToFile>()) : m_pfile(pfile) {} // 形参是老接口所属类
         void initdb() override
         {
             cout << "LogAdapter::initdb() Adapter LogToFile::initfile()" << endl;
-            // 这其中也可以加任何的其他代码......
             m_pfile->initfile();
         }
         void writetodb(const char *pcontent) override
@@ -136,23 +97,10 @@ namespace ns4
     class LogToFile // 日志文件操作相关类
     {
     public:
-        void initfile()
-        {
-            // 做日志文件初始化工作，比如打开文件等等
-        }
-        void writetofile(const char *pcontent)
-        {
-            // 将日志内容写入文件
-        }
-        void readfromfile()
-        {
-            // 从日志中读取一些信息
-        }
-        void closefile()
-        {
-            // 关闭日志文件
-        }
-        //......可能还有很多其他成员函数，略
+        void initfile() {}                        // 做日志文件初始化工作，比如打开文件等等
+        void writetofile(const char *pcontent) {} // 将日志内容写入文件
+        void readfromfile() {}                    // 从日志中读取一些信息
+        void closefile() {}                       // 关闭日志文件
     };
 
     class LogToDatabase
@@ -172,7 +120,6 @@ namespace ns4
         void initdb() override
         {
             cout << "LogAdapter::initdb() Adapter LogToFile::initfile()" << endl;
-            // 这其中也可以加任何的其他代码......
             initfile();
         }
         void writetodb(const char *pcontent) override
@@ -215,8 +162,9 @@ int main()
 
 #if 0
     using namespace ns3;
-    shared_ptr<LogToFile> plog2(new LogToFile());
-    shared_ptr<LogToDatabase> plogdb2(new LogAdapter(plog2));
+    //shared_ptr<LogToFile> plog2(new LogToFile());
+    //shared_ptr<LogToDatabase> plogdb2(new LogAdapter(plog2));
+    shared_ptr<LogToDatabase> plogdb2(new LogAdapter());
     plogdb2->initdb();
     plogdb2->writetodb("Writing a log to the database is actually writing a log to the log file");
     plogdb2->readfromdb();

@@ -252,7 +252,7 @@ namespace ns3
     {
     public:
         virtual ~Visitor() {}
-        virtual void Visit(Medicine *pelem) = 0;
+        virtual void Visit(Medicine *const pelem) = 0;
     };
 
     class Medicine // 药品父类
@@ -291,7 +291,7 @@ namespace ns3
     {
         float m_totalcost = 0.0f; // 总费用
     public:
-        void Visit(Medicine *m) override
+        void Visit(Medicine *const m) override
         {
             float tmpprice = m->getPrice();
             m_totalcost += tmpprice;
@@ -305,7 +305,7 @@ namespace ns3
     class Visitor_QYRY : public Visitor // 取药人员访问者子类
     {
     public:
-        void Visit(Medicine *m) override
+        void Visit(Medicine *const m) override
         {
             cout << "Drug taking personnel give " << m->getMdcName() << " to me!" << endl;
         }
@@ -314,7 +314,7 @@ namespace ns3
     class Visitor_YYS : public Visitor // 营养师访问者子类
     {
     public:
-        void Visit(Medicine *m) override
+        void Visit(Medicine *const m) override
         {
             cout << "The nutritionist suggested: Eating more coarse grains and less oil can effectively prevent blood clots!" << endl;
             cout << "The nutritionist suggested: Eating more mushrooms, onions, and kiwifruit can effectively reduce blood lipids!" << endl;
@@ -357,17 +357,17 @@ int main()
 #endif
 
 #if 1
-    using namespace ns2;
-    //using namespace ns3;
-    shared_ptr<Visitor> visitor_sf(new Visitor_SFRY()); // 收费人员访问者子类，里面承载着向我（患者）收费的算法
+    // using namespace ns2;
+    using namespace ns3;
     shared_ptr<Medicine> mdc_asplcrp(new M_asplcrp());
     shared_ptr<Medicine> mdc_fftdnhsp(new M_fftdnhsp());
     shared_ptr<Medicine> mdc_dlx(new M_dlx());
 
     // 各个元素子类调用Accept接受访问者的访问，就可以实现访问者要实现的功能
-    mdc_asplcrp->Accept(visitor_sf);  // 累加“阿司匹林肠溶片”的价格
-    mdc_fftdnhsp->Accept(visitor_sf); // 累加“氟伐他汀钠缓释片”的价格
-    mdc_dlx->Accept(visitor_sf);      // 累加“黛力新”的价格
+    shared_ptr<Visitor> visitor_sf(new Visitor_SFRY()); // 收费人员访问者子类，里面承载着向我（患者）收费的算法
+    mdc_asplcrp->Accept(visitor_sf);                    // 累加“阿司匹林肠溶片”的价格
+    mdc_fftdnhsp->Accept(visitor_sf);                   // 累加“氟伐他汀钠缓释片”的价格
+    mdc_dlx->Accept(visitor_sf);                        // 累加“黛力新”的价格
     cout << "total price: " << dynamic_pointer_cast<Visitor_SFRY>(visitor_sf)->getTotalCost() << ", the toll collector charged me!" << endl;
 
     shared_ptr<Visitor> visitor_qy(new Visitor_QYRY()); // 取药人员访问者子类，里面承载着向我发放药品的算法

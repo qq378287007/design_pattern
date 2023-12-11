@@ -21,81 +21,66 @@ namespace ns1
         virtual ~CtlParent() {}
         CtlParent(const string &caption) : m_caption(caption) {}
 
-    public:
-        // 当UI控件发生变化时该成员函数会被调用
-        virtual void Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist) = 0; // 形参所代表的map容器中包含着所有对话框中涉及到的UI控件，注意文件头要#include <map>
-
-        // 设置UI控件启用或禁用
-        virtual void Enable(bool sign) = 0;
+    public:                                                                         // 当UI控件发生变化时该成员函数会被调用
+        virtual void Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist) = 0; // 形参所代表的map容器中包含着所有对话框中涉及到的UI控件
+        virtual void Enable(bool sign) const = 0;                                   // 设置UI控件启用或禁用
     };
 
-    // 普通按钮相关类
-    class Button : public CtlParent
+    class Button : public CtlParent // 普通按钮相关类
     {
     public:
         Button(const string &caption) : CtlParent(caption) {}
 
     public:
-        // 设置按钮的启用或禁用
-        void Enable(bool sign) override
+        void Enable(bool sign) const override // 设置按钮的启用或禁用
         {
             if (sign)
-                cout << "button\"" << m_caption << "\"enable" << endl;
+                cout << "button \"" << m_caption << "\" enable" << endl;
             else
-                cout << "button\"" << m_caption << "\"disable" << endl;
-            // 具体实现按钮启用或者禁用的代码略......
+                cout << "button \"" << m_caption << "\" disable" << endl;
         }
 
         // 按钮被按下时该成员函数会被调用
         void Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist) override;
     };
 
-    // 单选按钮相关类
-    class RadioBtn : public CtlParent
+    class RadioBtn : public CtlParent // 单选按钮相关类
     {
     public:
-        RadioBtn(const string &caption) : CtlParent(caption) {} // 构造函数
+        RadioBtn(const string &caption) : CtlParent(caption) {}
+
     public:
-        // 设置单选按钮的启用或禁用
-        void Enable(bool sign) override
-        {
-            // 本范例用不到该功能，实现代码略......
-        }
+        void Enable(bool sign) const override {} // 设置单选按钮的启用或禁用
         // 设置单选按钮为被选中或者被取消选中，被选中的单选按钮中间有个黑色实心圆点
         void Selected(bool sign) const
         {
             if (sign)
-                cout << "radio button\"" << m_caption << "\"selected" << endl;
+                cout << "radio button \"" << m_caption << "\" selected" << endl;
             else
-                cout << "radio button\"" << m_caption << "\"not selected" << endl;
-            // 具体实现单选按钮被选中或者被取消选中的代码略......
+                cout << "radio button \"" << m_caption << "\" not selected" << endl;
         }
         // 单选按钮被单击时该成员函数会被调用
         void Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist) override;
     };
 
-    // 编辑框相关类
-    class EditCtl : public CtlParent
+    class EditCtl : public CtlParent // 编辑框相关类
     {
+        string m_content = ""; // 编辑框中的内容
     public:
-        EditCtl(const string &caption) : CtlParent(caption) {} // 构造函数
+        EditCtl(const string &caption) : CtlParent(caption) {}
+
     public:
-        // 设置编辑框的启用或禁用
-        void Enable(bool sign) override
+        void Enable(bool sign) const override // 设置编辑框的启用或禁用
         {
             if (sign)
-                cout << "edit box\"" << m_caption << "\"enable" << endl;
+                cout << "edit box \"" << m_caption << "\" enable" << endl;
             else
-                cout << "edit box\"" << m_caption << "\"disable" << endl;
-            // 具体实现编辑框启用或者禁用的代码略......
+                cout << "edit box \"" << m_caption << "\" disable" << endl;
         }
         // 是否编辑框中的内容为空
         bool isContentEmpty() const { return m_content.empty(); }
         // 编辑框内容发生变化时该成员函数会被调用
         void Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist) override;
-
-    private:
-        string m_content = ""; // 编辑框中的内容
     };
 
     // 按钮被按下时该成员函数会被调用
@@ -112,8 +97,8 @@ namespace ns1
     {
         if (m_caption == "visitor login")
         {
-            (static_pointer_cast<RadioBtn>(tmpuictllist["visitor login"]))->Selected(true);  // “游客登录”单选按钮设置为选中
-            (static_pointer_cast<RadioBtn>(tmpuictllist["account login"]))->Selected(false); // “账号登录”单选按钮设置为取消选中
+            static_pointer_cast<RadioBtn>(tmpuictllist["visitor login"])->Selected(true);  // “游客登录”单选按钮设置为选中
+            static_pointer_cast<RadioBtn>(tmpuictllist["account login"])->Selected(false); // “账号登录”单选按钮设置为取消选中
 
             tmpuictllist["account"]->Enable(false);  // “账号”编辑框设置为禁用
             tmpuictllist["password"]->Enable(false); // “密码”编辑框设置为禁用
@@ -122,14 +107,14 @@ namespace ns1
         }
         else if (m_caption == "account login")
         {
-            (static_pointer_cast<RadioBtn>(tmpuictllist["visitor login"]))->Selected(false); // “游客登录”单选按钮设置为取消选中
-            (static_pointer_cast<RadioBtn>(tmpuictllist["account login"]))->Selected(true);  // “账号登录”单选按钮设置为选中
+            static_pointer_cast<RadioBtn>(tmpuictllist["visitor login"])->Selected(false); // “游客登录”单选按钮设置为取消选中
+            static_pointer_cast<RadioBtn>(tmpuictllist["account login"])->Selected(true);  // “账号登录”单选按钮设置为选中
 
             tmpuictllist["account"]->Enable(true);  // “账号”编辑框设置为启用
             tmpuictllist["password"]->Enable(true); // “密码”编辑框设置为启用
 
             // 如果“账号”编辑框或者“密码”编辑框有一个为空，则不允许登录
-            if ((static_pointer_cast<EditCtl>(tmpuictllist["account"]))->isContentEmpty() || (static_pointer_cast<EditCtl>(tmpuictllist["password"]))->isContentEmpty())
+            if (static_pointer_cast<EditCtl>(tmpuictllist["account"])->isContentEmpty() || static_pointer_cast<EditCtl>(tmpuictllist["password"])->isContentEmpty())
                 tmpuictllist["sign in"]->Enable(false); // “登录”按钮设置为禁用
             else
                 tmpuictllist["sign in"]->Enable(true); // “登录”按钮设置为启用
@@ -140,7 +125,7 @@ namespace ns1
     void EditCtl::Changed(map<string, shared_ptr<CtlParent>> &tmpuictllist)
     {
         // 如果“账号”编辑框或者“密码”编辑框有一个为空，则不允许登录
-        if ((static_pointer_cast<EditCtl>(tmpuictllist["account"]))->isContentEmpty() || (static_pointer_cast<EditCtl>(tmpuictllist["password"]))->isContentEmpty())
+        if (static_pointer_cast<EditCtl>(tmpuictllist["account"])->isContentEmpty() || static_pointer_cast<EditCtl>(tmpuictllist["password"])->isContentEmpty())
             tmpuictllist["sign in"]->Enable(false); // “登录”按钮设置为禁用
         else
             tmpuictllist["sign in"]->Enable(true); // “登录”按钮设置为启用
@@ -156,8 +141,8 @@ namespace ns2
         virtual ~Mediator() {}
 
     public:
-        virtual void createCtrl() = 0;            // 创建所有需要用到的UI控件
-        virtual void ctlChanged(CtlParent *) = 0; // 当某个UI控件发生变化时调用中介者对象的该成员函数来通知中介者
+        virtual void createCtrl() = 0;                 // 创建所有需要用到的UI控件
+        virtual void ctlChanged(CtlParent *const) = 0; // 当某个UI控件发生变化时调用中介者对象的该成员函数来通知中介者
     };
 
     class CtlParent // UI控件类的父类
@@ -167,76 +152,53 @@ namespace ns2
         string m_caption;      // 控件上面显示的文字内容，可能并不是所有控件都需要但这里为显示方便依旧引入
     public:
         virtual ~CtlParent() {}
-        CtlParent(Mediator *ptmpm, const string &caption) : m_pmediator(ptmpm), m_caption(caption) {}
+        CtlParent(Mediator *const ptmpm, const string &caption) : m_pmediator(ptmpm), m_caption(caption) {}
 
-    public:
-        // 当UI控件发生变化时该成员函数会被调用
-        virtual void Changed()
-        {
-            m_pmediator->ctlChanged(this); // 通知中介者对象，所有事情让中介者对象去做
-        }
-
-        // 设置UI控件启用或禁用
-        virtual void Enable(bool sign) = 0;
+    public:                                                       // 当UI控件发生变化时该成员函数会被调用
+        virtual void Changed() { m_pmediator->ctlChanged(this); } // 通知中介者对象，所有事情让中介者对象去做
+        virtual void Enable(bool sign) = 0;                       // 设置UI控件启用或禁用
     };
 
     class Button : public CtlParent // 普通按钮相关类
     {
     public:
-        Button(Mediator *ptmpm, const string &caption) : CtlParent(ptmpm, caption) {} // 构造函数
-                                                                                      // 设置按钮的启用或禁用
-        void Enable(bool sign) override
+        Button(Mediator *const ptmpm, const string &caption) : CtlParent(ptmpm, caption) {}
+        void Enable(bool sign) override // 设置按钮的启用或禁用
         {
             if (sign == true)
-                cout << "button\"" << m_caption << "\"enable" << endl;
+                cout << "button \"" << m_caption << "\" enable" << endl;
             else
-                cout << "button\"" << m_caption << "\"disable" << endl;
-            // 具体实现按钮启用或者禁用的代码略......
+                cout << "button \"" << m_caption << "\" disable" << endl;
         }
     };
 
     class RadioBtn : public CtlParent // 单选按钮相关类
     {
     public:
-        RadioBtn(Mediator *ptmpm, const string &caption) : CtlParent(ptmpm, caption) {} // 构造函数
-                                                                                        // 设置单选按钮的启用或禁用
-        void Enable(bool sign) override
-        {
-            // 用不到该功能，实现代码略......
-        }
-
-        // 设置单选按钮为被选中或者被取消选中，被选中的单选按钮中间有个黑色实心圆点
-        void Selected(bool sign)
+        RadioBtn(Mediator *const ptmpm, const string &caption) : CtlParent(ptmpm, caption) {}
+        void Enable(bool sign) override {} // 设置单选按钮的启用或禁用
+        void Selected(bool sign)           // 设置单选按钮为被选中或者被取消选中，被选中的单选按钮中间有个黑色实心圆点
         {
             if (sign == true)
-                cout << "radio button\"" << m_caption << "\"selected" << endl;
+                cout << "radio button \"" << m_caption << "\" selected" << endl;
             else
-                cout << "radio button\"" << m_caption << "\"not selected" << endl;
-            // 具体实现单选按钮被选中或者被取消选中的代码略......
+                cout << "radio button \"" << m_caption << "\" not selected" << endl;
         }
     };
 
     class EditCtl : public CtlParent // 编辑框相关类
     {
+        string m_content = ""; // 编辑框中的内容
     public:
-        EditCtl(Mediator *ptmpm, const string &caption) : CtlParent(ptmpm, caption) {} // 构造函数
-        // 设置编辑框的启用或禁用
-        void Enable(bool sign) override
+        EditCtl(Mediator *const ptmpm, const string &caption) : CtlParent(ptmpm, caption) {}
+        void Enable(bool sign) override // 设置编辑框的启用或禁用
         {
             if (sign == true)
-                cout << "edit box\"" << m_caption << "\"enable" << endl;
+                cout << "edit box \"" << m_caption << "\" enable" << endl;
             else
-                cout << "edit box\"" << m_caption << "\"disable" << endl;
-            // 具体实现编辑框启用或者禁用的代码略......
+                cout << "edit box \"" << m_caption << "\" disable" << endl;
         }
-        // 是否编辑框中的内容为空
-        bool isContentEmpty()
-        {
-            return m_content.empty();
-        }
-        // 其他成员函数略......
-    private:
-        string m_content = ""; // 编辑框中的内容
+        bool isContentEmpty() const { return m_content.empty(); } // 是否编辑框中的内容为空
     };
 
     class concrMediator : public Mediator // 具体中介者类
@@ -251,8 +213,7 @@ namespace ns2
         shared_ptr<EditCtl> mp_edtctl1; // 账号编辑框
         shared_ptr<EditCtl> mp_edtctl2; // 密码编辑框
     public:
-        // 创建各种UI控件
-        void createCtrl() override
+        void createCtrl() override // 创建各种UI控件
         {
             // 当然，各种UI控件对象在外面创建，然后把地址传递进来也可以
             mp_login = make_shared<Button>(this, "sign in");
@@ -273,12 +234,10 @@ namespace ns2
 
             mp_login->Enable(true);  // “登录”按钮设置为启用
             mp_logout->Enable(true); // “退出”按钮设置为启用
-
-            // UI控件的位置设置等代码略......
         }
 
         // 当某个UI控件发生变化时调用中介者对象的该成员函数来通知中介者
-        virtual void ctlChanged(CtlParent *p_ctrl)
+        virtual void ctlChanged(CtlParent *const p_ctrl)
         {
             if (p_ctrl == mp_login.get()) // 登录按钮被单击
                 cout << "Start the game login verification, and decide whether to enter the game or give a prompt according to the verification result!" << endl;
@@ -322,6 +281,7 @@ int main()
 {
 #if 0
     using namespace ns1;
+
     // 创建各种UI控件
     map<string, shared_ptr<CtlParent>> uictllist; // 将所有创建的UI控件保存到map容器中，方便进行参数传递
     uictllist["sign in"] = make_shared<Button>("sign in");
@@ -335,8 +295,8 @@ int main()
 
     // 设置一下缺省的UI控件状态
     // 因为只有子类型才有Selected成员函数，所以这里需要用到强制类型转换
-    (static_pointer_cast<RadioBtn>(uictllist["visitor login"]))->Selected(true);  // “游客登录”单选按钮设置为选中
-    (static_pointer_cast<RadioBtn>(uictllist["account login"]))->Selected(false); // “账号登录”单选按钮设置为取消选中
+    static_pointer_cast<RadioBtn>(uictllist["visitor login"])->Selected(true);  // “游客登录”单选按钮设置为选中
+    static_pointer_cast<RadioBtn>(uictllist["account login"])->Selected(false); // “账号登录”单选按钮设置为取消选中
 
     uictllist["account"]->Enable(false);  // “账号”编辑框设置为禁用
     uictllist["password"]->Enable(false); // “密码”编辑框设置为禁用
@@ -352,7 +312,7 @@ int main()
     using namespace ns2;
     concrMediator mymedia;
     mymedia.createCtrl();
-    cout << "-------------when\"account login\"radio button pressed:-------------" << endl;
+    cout << "-------------when \"account login\" radio button pressed:-------------" << endl;
     // 模拟“账号”按钮被按下，则去通知中介者，由中介者实现具体的逻辑处理
     mymedia.mp_rbtn2->Changed();
 #endif
