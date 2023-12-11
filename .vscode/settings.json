@@ -4,6 +4,7 @@
         "memory": "cpp",
         "list": "cpp",
         "ostream": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "mutex": "cpp"
     }
 }

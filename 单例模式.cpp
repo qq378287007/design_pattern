@@ -5,6 +5,238 @@
 #include <atomic>
 using namespace std;
 
+// 懒汉式，未释放
+namespace ns1
+{
+    class GameConfig
+    {
+        static GameConfig *m_instance1; // 指向本类对象的指针
+        // static mutex m_mutex;
+        // static shared_ptr<GameConfig> GameConfig::m_instance3;
+
+    private:
+        GameConfig(){};
+        GameConfig(const GameConfig &tmpobj);
+        GameConfig &operator=(const GameConfig &tmpobj);
+        ~GameConfig(){};
+
+    public:
+        static GameConfig *getInstance1()
+        {
+            // lock_guard<mutex> l(m_mutex);
+            if (m_instance1 == nullptr)
+                m_instance1 = new GameConfig();
+            return m_instance1;
+        }
+        static GameConfig *getInstance2()
+        {
+            static GameConfig m_instance2;
+            return &m_instance2;
+        }
+        /*
+        static shared_ptr<GameConfig> getInstance3()
+        {
+            if (m_instance3 == nullptr)
+                m_instance3 = make_shared<GameConfig>();
+            return m_instance3;
+        }
+        */
+        /*
+        static shared_ptr<GameConfig> getInstance4()
+        {
+            static shared_ptr<GameConfig> m_instance4(new GameConfig());
+            return m_instance4;
+        }
+        */
+    };
+    GameConfig *GameConfig::m_instance1 = nullptr;
+    // mutex GameConfig::m_mutex;
+    // shared_ptr<GameConfig> GameConfig::m_instance3 = nullptr;
+}
+
+// 懒汉式，嵌套类释放
+namespace ns2
+{
+    class GameConfig
+    {
+        static GameConfig *m_instance;
+        // static mutex m_mutex;
+    private:
+        GameConfig(){};
+        GameConfig(const GameConfig &tmpobj);
+        GameConfig &operator=(const GameConfig &tmpobj);
+        ~GameConfig(){};
+
+    public:
+        static GameConfig *getInstance()
+        {
+            // lock_guard<mutex> gcguard(m_mutex);
+            if (m_instance == nullptr)
+            {
+                // 这里再加锁
+                // lock_guard<mutex> gcguard(m_mutex);
+                // if (m_instance == nullptr)
+                //{
+                m_instance = new GameConfig();
+                static Garbo garboobj;
+                //}
+            }
+            return m_instance;
+        }
+
+    public:
+        static void freeInstance() // 要手工调用才能释放内存
+        {
+            if (GameConfig::m_instance != nullptr)
+            {
+                delete GameConfig::m_instance;
+                GameConfig::m_instance = nullptr;
+            }
+        }
+
+    private:
+        class Garbo // 手工释放单件类对象引入的GameConfig类中的嵌套类（垃圾回收）
+        {
+        public:
+            ~Garbo() { GameConfig::freeInstance(); }
+        };
+    };
+    GameConfig *GameConfig::m_instance = nullptr;
+    // mutex GameConfig::m_mutex;
+}
+
+// 懒汉式，加锁+嵌套类释放
+namespace ns3
+{
+    class GameConfig
+    {
+        static atomic<GameConfig *> m_instance;
+        static mutex m_mutex;
+
+    private:
+        GameConfig(){};
+        GameConfig(const GameConfig &tmpobj);
+        GameConfig &operator=(const GameConfig &tmpobj);
+        ~GameConfig(){};
+
+    public:
+        static GameConfig *getInstance()
+        {
+            GameConfig *tmp = m_instance.load(memory_order_relaxed);
+            atomic_thread_fence(memory_order_acquire);
+            if (tmp == nullptr)
+            {
+                lock_guard<mutex> lock(m_mutex);
+                tmp = m_instance.load(memory_order_relaxed);
+                if (tmp == nullptr)
+                {
+                    tmp = new GameConfig();
+                    static Garbo garboobj;
+                    atomic_thread_fence(memory_order_release);
+                    m_instance.store(tmp, memory_order_relaxed);
+                }
+            }
+            return tmp;
+        }
+
+    private:
+        class Garbo // 手工释放单件类对象引入的GameConfig类中的嵌套类（垃圾回收）
+        {
+        public:
+            ~Garbo()
+            {
+                if (GameConfig::m_instance != nullptr)
+                {
+                    delete GameConfig::m_instance;
+                    GameConfig::m_instance = nullptr;
+                }
+            }
+        };
+    };
+    atomic<GameConfig *> GameConfig::m_instance;
+    mutex GameConfig::m_mutex;
+}
+
+// 饿汉式，嵌套类释放
+namespace ns4
+{
+    class GameConfig
+    {
+        static GameConfig *m_instance;
+
+    private:
+        GameConfig(){};
+        GameConfig(const GameConfig &tmpobj);
+        GameConfig &operator=(const GameConfig &tmpobj);
+        ~GameConfig(){};
+
+    public:
+        static GameConfig *getInstance() { return m_instance; }
+
+    private:
+        class Garbo // 手工释放单件类对象引入的GameConfig类中的嵌套类（垃圾回收）
+        {
+        public:
+            ~Garbo()
+            {
+                if (GameConfig::m_instance != nullptr)
+                {
+                    delete GameConfig::m_instance;
+                    GameConfig::m_instance = nullptr;
+                }
+            }
+        };
+
+    private:
+        static Garbo garboobj;
+    };
+    GameConfig *GameConfig::m_instance = new GameConfig(); // 趁静态成员变量定义的时机直接初始化是被允许的，即便GameConfig构造函数用private修饰
+    GameConfig::Garbo GameConfig::garboobj;
+}
+
+// 饿汉式
+namespace ns5
+{
+    class GameConfig2
+    {
+        static GameConfig2 m_instance;
+
+    private:
+        GameConfig2(){};
+        GameConfig2(const GameConfig2 &tmpobj);
+        GameConfig2 &operator=(const GameConfig2 &tmpobj);
+        ~GameConfig2(){};
+
+    public:
+        static GameConfig2 *getInstance() { return &m_instance; }
+    };
+    GameConfig2 GameConfig2::m_instance;
+
+    class GameConfig
+    {
+    private:
+        GameConfig(){};
+        GameConfig(const GameConfig &tmpobj);
+        GameConfig &operator=(const GameConfig &tmpobj);
+        ~GameConfig(){};
+
+    public:
+        static GameConfig &getInstance()
+        {
+            static GameConfig instance;
+            return instance;
+        }
+    };
+
+    int myfunc()
+    {
+        static int stcs = 100; // 不需要调用myfunc函数，stcs就已经等于100了
+        stcs += 180;
+        return stcs;
+    }
+}
+
+// 饿汉式
 namespace ns111
 {
     // 饿汉模式
@@ -62,7 +294,6 @@ namespace ns111
         class Deleter
         {
         public:
-            Deleter(){};
             ~Deleter()
             {
                 if (instance != nullptr)
@@ -78,10 +309,7 @@ namespace ns111
         ~CSingleton4() {}
 
     public:
-        static CSingleton4 *GetInstance()
-        {
-            return instance;
-        }
+        static CSingleton4 *GetInstance() { return instance; }
     };
     CSingleton4 *CSingleton4::instance = new CSingleton4();
     CSingleton4::Deleter CSingleton4::m_deleter;
@@ -149,10 +377,7 @@ namespace ns222
         Singleton3 &operator=(Singleton3 &&) = delete;
 
     public:
-        static void destoryInstance(Singleton3 *x)
-        {
-            delete x;
-        }
+        static void destoryInstance(Singleton3 *x) { delete x; }
 
         static shared_ptr<Singleton3> getInstance()
         {
@@ -179,7 +404,6 @@ namespace ns222
         class Deleter
         {
         public:
-            Deleter(){};
             ~Deleter()
             {
                 if (m_instance != nullptr)
@@ -238,11 +462,10 @@ namespace ns222
     };
     atomic<Singleton5 *> Singleton5::m_instance{nullptr};
     mutex Singleton5::mtx;
-
 }
 
 //  加锁的懒汉式
-namespace ns1
+namespace ns2_1
 {
     class SingleInstance
     {
@@ -269,7 +492,6 @@ namespace ns1
                     m_SingleInstance = temp;
                 }
             }
-
             return m_SingleInstance;
         }
 
@@ -282,7 +504,6 @@ namespace ns1
                 m_SingleInstance = nullptr;
             }
         }
-
         void Print()
         {
             cout << "实例内存地址: " << this << endl;
@@ -292,8 +513,7 @@ namespace ns1
     mutex SingleInstance::m_Mutex;
 }
 
-/*
-namespace ns2
+namespace ns2_2
 {
     class Singleton
     {
@@ -307,10 +527,7 @@ namespace ns2
             {
                 unique_lock<mutex> lock(singletonMutex);
                 if (singleton == nullptr)
-                {
-                    volatile shared_ptr<Singleton> temp(new Singleton());
-                    singleton = temp;
-                }
+                    singleton.reset(new Singleton());
             }
             return singleton;
         }
@@ -334,10 +551,8 @@ namespace ns2
     shared_ptr<Singleton> Singleton::singleton = nullptr;
     mutex Singleton::singletonMutex;
 }
-*/
 
-/*
-namespace ns3
+namespace ns2_3
 {
     class Singleton
     {
@@ -366,10 +581,9 @@ namespace ns3
     shared_ptr<Singleton> Singleton::singleton = nullptr;
     once_flag Singleton::singletonFlag;
 }
-*/
 
 // 模板实现
-namespace ns4
+namespace ns2_4
 {
     template <typename T>
     shared_ptr<T> getInstance()
@@ -454,14 +668,45 @@ int main()
 {
 #if 0
     using namespace ns1;
+    GameConfig *g_gc1 = GameConfig::getInstance1();
+    GameConfig *g_gc2 = GameConfig::getInstance2();
+#endif
+
+#if 0
+    using namespace ns2;
+    GameConfig *g_gc = GameConfig::getInstance();
+    // g_gc->freeInstance(); // 手工释放内存演示
+#endif
+
+#if 0
+    using namespace ns3;
+    GameConfig *g_gc = GameConfig::getInstance();
+    GameConfig *g_gc2 = GameConfig::getInstance();
+#endif
+
+#if 0
+    using namespace ns4;
+    GameConfig *g_gc = GameConfig::getInstance();
+    GameConfig *g_gc2 = GameConfig::getInstance();
+#endif
+
+#if 1
+    using namespace ns5;
+    GameConfig2 *g_gc = GameConfig2::getInstance();
+    GameConfig &g_gc2 = GameConfig::getInstance();
+    myfunc();
+#endif
+
+#if 0
+    using namespace ns2_1;
     SingleInstance *s = SingleInstance::GetInstance();
     s->Print();
     SingleInstance::GetInstance()->Print();
     SingleInstance::deleteInstance();
 #endif
 
-#if 1
-    using namespace ns4;
+#if 0
+    using namespace ns2_4;
     getInstance<TestClass>()->print();
     getInstance<TestClass>()->print();
 
@@ -475,5 +720,6 @@ int main()
     cout << "instance2 address: " << instance2.get() << endl;
 #endif
 
+    cout << "Over!\n";
     return 0;
 }
