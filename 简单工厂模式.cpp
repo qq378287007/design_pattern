@@ -19,28 +19,19 @@ namespace ns1
     class M_Undead : public Monster // 亡灵类怪物
     {
     public:
-        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A ghost monster came to this world" << endl;
-        }
+        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A ghost monster came to this world" << endl; }
     };
 
     class M_Element : public Monster // 元素类怪物
     {
     public:
-        M_Element(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "An elemental monster came to this world" << endl;
-        }
+        M_Element(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "An elemental monster came to this world" << endl; }
     };
 
     class M_Mechanic : public Monster // 机械类怪物
     {
     public:
-        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A mechanical monster came to this world" << endl;
-        }
+        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A mechanical monster came to this world" << endl; }
     };
 
     shared_ptr<Monster> createMonster(const string &strmontype)
@@ -84,28 +75,19 @@ namespace ns2
     class Rectangle : public Shape
     {
     public:
-        void draw() const override
-        {
-            cout << "Inside Rectangle::draw() method." << endl;
-        }
+        void draw() const override { cout << "Inside Rectangle::draw() method." << endl; }
     };
 
     class Square : public Shape
     {
     public:
-        void draw() const override
-        {
-            cout << "Inside Square::draw() method." << endl;
-        }
+        void draw() const override { cout << "Inside Square::draw() method." << endl; }
     };
 
     class Circle : public Shape
     {
     public:
-        void draw() const override
-        {
-            cout << "Inside Circle::draw() method." << endl;
-        }
+        void draw() const override { cout << "Inside Circle::draw() method." << endl; }
     };
 
     class ShapeFactory
@@ -123,7 +105,6 @@ namespace ns2
                 return nullptr;
         }
     };
-
 }
 
 int main()

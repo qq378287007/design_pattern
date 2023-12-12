@@ -29,52 +29,25 @@ namespace ns1
     class M_Undead : public Monster // 亡灵类怪物
     {
     public:
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Undead function" << endl;
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Undead function" << endl;
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Undead function" << endl;
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Undead function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Undead function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Undead function" << endl; }
     };
 
     class M_Element : public Monster // 元素类怪物
     {
     public:
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Element function" << endl;
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Element function" << endl;
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Element function" << endl;
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Element function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Element function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Element function" << endl; }
     };
 
     class M_Mechanic : public Monster // 机械类怪物
     {
     public:
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Mechanic function" << endl;
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Mechanic function" << endl;
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Mechanic function" << endl;
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Mechanic function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Mechanic function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Mechanic function" << endl; }
     };
 
     class MonsterBuilder // 怪物构建器父类
@@ -106,22 +79,9 @@ namespace ns1
     public:
         M_UndeadBuilder() : MonsterBuilder(make_shared<M_Undead>()) {}
 
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Undead function" << endl;
-            // 具体要做的事情其实是委托给怪物子类来完成，委托指把本该自己实现的功能转给其他类实现
-            //  m_pMonster->......略
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Undead function" << endl;
-            // m_pMonster->......略
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Undead function" << endl;
-            // m_pMonster->......略
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Undead function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Undead function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Undead function" << endl; }
     };
 
     class M_ElementBuilder : public MonsterBuilder // 元素类怪物构建器类
@@ -129,21 +89,9 @@ namespace ns1
     public:
         M_ElementBuilder() : MonsterBuilder(make_shared<M_Element>()) {}
 
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Element function" << endl;
-            // m_pMonster->......略
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Element function" << endl;
-            // m_pMonster->......略
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Element function" << endl;
-            // m_pMonster->......略
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Element function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Element function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Element function" << endl; }
     };
 
     class M_MechanicBuilder : public MonsterBuilder // 机械类怪物构建器类
@@ -151,21 +99,9 @@ namespace ns1
     public:
         M_MechanicBuilder() : MonsterBuilder(make_shared<M_Mechanic>()) {}
 
-        void LoadTrunkModel(const string &strno) override
-        {
-            cout << "body + other M_Mechanic function" << endl;
-            // m_pMonster->......略
-        }
-        void LoadHeadModel(const string &strno) override
-        {
-            cout << "head + other M_Mechanic function" << endl;
-            // m_pMonster->......略
-        }
-        void LoadLimbsModel(const string &strno) override
-        {
-            cout << "limb + other M_Mechanic function" << endl;
-            // m_pMonster->......略
-        }
+        void LoadTrunkModel(const string &strno) override { cout << "body + other M_Mechanic function" << endl; }
+        void LoadHeadModel(const string &strno) override { cout << "head + other M_Mechanic function" << endl; }
+        void LoadLimbsModel(const string &strno) override { cout << "limb + other M_Mechanic function" << endl; }
     };
 
     class MonsterDirector // 指挥者类
@@ -217,7 +153,7 @@ namespace ns2
         string getUserName() const { return m_strUserName; } // 获取日报所属员工姓名
     };
 
-    class ExportToTxtFile // 将日报导出到纯文本格式文件 相关的类
+    class ExportToTxtFile // 将日报导出到纯文本格式文件相关的类
     {
     public:
         void doExport(const shared_ptr<DailyHeaderData> &dailyheaderobj, const vector<shared_ptr<DailyContentData>> &vec_dailycontobj, const shared_ptr<DailyFooterData> &dailyfooterobj)
@@ -228,7 +164,7 @@ namespace ns2
             strtmp += dailyheaderobj->getDepName() + "," + dailyheaderobj->getExportDate() + "\n";
 
             //(2)拼接内容主体，内容主体中的描述数据会有多条，因此需要迭代
-            for (auto iter = vec_dailycontobj.begin(); iter != vec_dailycontobj.end(); ++iter)
+            for (auto iter = vec_dailycontobj.cbegin(); iter != vec_dailycontobj.cend(); ++iter)
             {
                 ostringstream oss; // 记得#include头文件sstream
                 oss << (*iter)->getSpendTime();
@@ -243,8 +179,7 @@ namespace ns2
         }
     };
 
-    // 将日报导出到XML格式文件 相关的类
-    class ExportToXmlFile
+    class ExportToXmlFile // 将日报导出到XML格式文件相关的类
     {
     public:
         void doExport(const shared_ptr<DailyHeaderData> &dailyheaderobj, const vector<shared_ptr<DailyContentData>> &vec_dailycontobj, const shared_ptr<DailyFooterData> &dailyfooterobj)
@@ -261,7 +196,7 @@ namespace ns2
 
             //(2)拼接内容主体，内容主体中的描述数据会有多条，因此需要迭代
             strtmp += "    <Body>\n";
-            for (auto iter = vec_dailycontobj.begin(); iter != vec_dailycontobj.end(); ++iter)
+            for (auto iter = vec_dailycontobj.cbegin(); iter != vec_dailycontobj.cend(); ++iter)
             {
                 ostringstream oss; // 记得#include头文件sstream
                 oss << (*iter)->getSpendTime();
@@ -305,7 +240,7 @@ namespace ns2
         }
         void buildBody(const vector<shared_ptr<DailyContentData>> &vec_dailycontobj) override // 拼接内容主体
         {
-            for (auto iter = vec_dailycontobj.begin(); iter != vec_dailycontobj.end(); ++iter)
+            for (auto iter = vec_dailycontobj.cbegin(); iter != vec_dailycontobj.cend(); ++iter)
             {
                 ostringstream oss; // 记得#include头文件sstream
                 oss << (*iter)->getSpendTime();
@@ -334,7 +269,7 @@ namespace ns2
         void buildBody(const vector<shared_ptr<DailyContentData>> &vec_dailycontobj) override // 拼接内容主体
         {
             m_strResult += "    <Body>\n";
-            for (auto iter = vec_dailycontobj.begin(); iter != vec_dailycontobj.end(); ++iter)
+            for (auto iter = vec_dailycontobj.cbegin(); iter != vec_dailycontobj.cend(); ++iter)
             {
                 ostringstream oss; // 记得#include头文件sstream
                 oss << (*iter)->getSpendTime();

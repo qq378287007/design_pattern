@@ -5,6 +5,11 @@
         "list": "cpp",
         "ostream": "cpp",
         "iostream": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "utility": "cpp",
+        "sstream": "cpp",
+        "array": "cpp",
+        "ios": "cpp",
+        "xutility": "cpp"
     }
 }

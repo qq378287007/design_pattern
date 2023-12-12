@@ -75,7 +75,7 @@ namespace ns1
     {
     public:
         virtual ~ItemStrategy() {}
-        virtual void UseItem(Fighter *mainobj) = 0;
+        virtual void UseItem(Fighter *const mainobj) = 0;
     };
 
     // 战斗者父类
@@ -93,17 +93,9 @@ namespace ns1
         virtual ~Fighter() {}
 
     public:
-        void SetItemStrategy(const shared_ptr<ItemStrategy> &strategy) // 设置道具使用的策略
-        {
-            itemstrategy = strategy;
-        }
-        void UseItem() // 使用道具（吃药）
-        {
-            itemstrategy->UseItem(this);
-        }
-
+        void SetItemStrategy(const shared_ptr<ItemStrategy> &strategy) { itemstrategy = strategy; } // 设置道具使用的策略
+        void UseItem() { itemstrategy->UseItem(this); }                                             // 使用道具（吃药）
         int GetLife() const { return m_life; }
-
         void SetLife(int life) { m_life = life; }
     };
 
@@ -122,28 +114,19 @@ namespace ns1
     class ItemStrategy_BXD : public ItemStrategy // 补血丹策略类
     {
     public:
-        void UseItem(Fighter *mainobj) override
-        {
-            mainobj->SetLife(mainobj->GetLife() + 200); // 补充200点生命值
-        }
+        void UseItem(Fighter *const mainobj) override { mainobj->SetLife(mainobj->GetLife() + 200); }
     };
 
     class ItemStrategy_DHD : public ItemStrategy // 大还丹策略类
     {
     public:
-        void UseItem(Fighter *mainobj) override
-        {
-            mainobj->SetLife(mainobj->GetLife() + 300); // 补充300点生命值
-        }
+        void UseItem(Fighter *const mainobj) override { mainobj->SetLife(mainobj->GetLife() + 300); }
     };
 
     class ItemStrategy_SHD : public ItemStrategy // 守护丹策略类
     {
     public:
-        void UseItem(Fighter *mainobj) override
-        {
-            mainobj->SetLife(mainobj->GetLife() + 500); // 补充500点生命值
-        }
+        void UseItem(Fighter *const mainobj) override { mainobj->SetLife(mainobj->GetLife() + 500); }
     };
 }
 
@@ -218,7 +201,7 @@ namespace ns3
 
 int main()
 {
-#if 1
+#if 0
     using namespace ns0;
     shared_ptr<Fighter> prole_war(new F_Warrior(1000, 0, 200)); // 这没有采用工厂模式，如果主角很多，可以考虑采用工厂模式创建对象
     prole_war->UseItem(LF_DHD);
@@ -249,7 +232,7 @@ int main()
     pobjwar->attack_enemy_element(pobjelm); // 攻击一只元素类怪物
 #endif
 
-#if 0
+#if 1
     using namespace ns3;
     shared_ptr<F_Warrior> pobjwar(new F_Warrior());
 
@@ -257,7 +240,6 @@ int main()
 
     shared_ptr<Monster> pobjelm(new M_Element());
     pobjwar->attack_enemy(pobjelm); // 攻击一只元素类怪物
-
 #endif
 
     return 0;

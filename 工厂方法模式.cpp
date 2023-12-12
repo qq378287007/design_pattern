@@ -26,62 +26,44 @@ namespace ns1
     class M_Undead : public Monster // 亡灵类怪物
     {
     public:
-        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A ghost monster came to this world" << endl;
-        }
+        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A ghost monster came to this world" << endl; }
     };
 
     class M_Element : public Monster // 元素类怪物
     {
     public:
-        M_Element(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "An elemental monster came to this world" << endl;
-        }
+        M_Element(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "An elemental monster came to this world" << endl; }
     };
 
     class M_Mechanic : public Monster // 机械类怪物
     {
     public:
-        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A mechanical monster came to this world" << endl;
-        }
+        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A mechanical monster came to this world" << endl; }
     };
 
     class M_ParFactory // 所有工厂类的父类
     {
     public:
         virtual ~M_ParFactory() {}
-        virtual shared_ptr<Monster> createMonster() = 0;
+        virtual shared_ptr<Monster> createMonster() const = 0;
     };
 
     class M_UndeadFactory : public M_ParFactory // M_Undead怪物类型的工厂，生产M_Undead类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Undead>(300, 50, 80); // 创建亡灵类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Undead>(300, 50, 80); } // 创建亡灵类怪物
     };
 
     class M_ElementFactory : public M_ParFactory // M_Element怪物类型的工厂，生产M_Element类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Element>(200, 80, 100); // 创建元素类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Element>(200, 80, 100); } // 创建元素类怪物
     };
 
     class M_MechanicFactory : public M_ParFactory // M_Mechanic怪物类型的工厂，生产M_Mechanic类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Mechanic>(400, 0, 110); // 创建机械类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Mechanic>(400, 0, 110); } // 创建机械类怪物
     };
 }
 
@@ -102,62 +84,44 @@ namespace ns2
     class M_Undead : public Monster // 亡灵类怪物
     {
     public:
-        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A ghost monster came to this world" << endl;
-        }
+        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A ghost monster came to this world" << endl; }
     };
 
     class M_Element : public Monster // 元素类怪物
     {
     public:
-        M_Element(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "An elemental monster came to this world" << endl;
-        }
+        M_Element(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "An elemental monster came to this world" << endl; }
     };
 
     class M_Mechanic : public Monster // 机械类怪物
     {
     public:
-        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A mechanical monster came to this world" << endl;
-        }
+        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A mechanical monster came to this world" << endl; }
     };
 
     class M_ParFactory // 所有工厂类的父类
     {
     public:
         virtual ~M_ParFactory() {}
-        virtual shared_ptr<Monster> createMonster() = 0;
+        virtual shared_ptr<Monster> createMonster() const = 0;
     };
 
     class M_UndeadFactory : public M_ParFactory // M_Undead怪物类型的工厂，生产M_Undead类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Undead>(300, 50, 80); // 创建亡灵类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Undead>(300, 50, 80); } // 创建亡灵类怪物
     };
 
     class M_ElementFactory : public M_ParFactory // M_Element怪物类型的工厂，生产M_Element类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Element>(200, 80, 100); // 创建元素类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Element>(200, 80, 100); } // 创建元素类怪物
     };
 
     class M_MechanicFactory : public M_ParFactory // M_Mechanic怪物类型的工厂，生产M_Mechanic类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Mechanic>(400, 0, 110); // 创建机械类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Mechanic>(400, 0, 110); } // 创建机械类怪物
     };
 
     // 模板实现
@@ -165,31 +129,25 @@ namespace ns2
     class M_ChildFactory1 : public M_ParFactory
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<T>(300, 50, 80);
-        }
+        shared_ptr<Monster> createMonster() const { return make_shared<T>(300, 50, 80); }
     };
 
     template <typename T>
     class M_ChildFactory2
     {
     public:
-        static shared_ptr<Monster> createMonster(int life, int magic, int attack)
-        {
-            return make_shared<T>(life, magic, attack);
-        }
+        static shared_ptr<Monster> createMonster(int life, int magic, int attack) { return make_shared<T>(life, magic, attack); }
     };
 
     class M_ChildFactory3
     {
     public:
         template <typename T>
-        static shared_ptr<Monster> createMonster(int life, int magic, int attack)
-        {
-            return make_shared<T>(life, magic, attack);
-        }
+        static shared_ptr<Monster> createMonster(int life, int magic, int attack) { return make_shared<T>(life, magic, attack); }
     };
+
+    template <typename T>
+    shared_ptr<T> getMonster(int life, int magic, int attack) { return make_shared<T>(life, magic, attack); }
 }
 
 namespace ns3
@@ -209,62 +167,44 @@ namespace ns3
     class M_Undead : public Monster // 亡灵类怪物
     {
     public:
-        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A ghost monster came to this world" << endl;
-        }
+        M_Undead(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A ghost monster came to this world" << endl; }
     };
 
     class M_Element : public Monster // 元素类怪物
     {
     public:
-        M_Element(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "An elemental monster came to this world" << endl;
-        }
+        M_Element(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "An elemental monster came to this world" << endl; }
     };
 
     class M_Mechanic : public Monster // 机械类怪物
     {
     public:
-        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack)
-        {
-            cout << "A mechanical monster came to this world" << endl;
-        }
+        M_Mechanic(int life, int magic, int attack) : Monster(life, magic, attack) { cout << "A mechanical monster came to this world" << endl; }
     };
 
     class M_ParFactory // 所有工厂类的父类
     {
     public:
         virtual ~M_ParFactory() {}
-        virtual shared_ptr<Monster> createMonster() = 0;
+        virtual shared_ptr<Monster> createMonster() const = 0;
     };
 
     class M_UndeadFactory : public M_ParFactory // M_Undead怪物类型的工厂，生产M_Undead类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Undead>(300, 50, 80); // 创建亡灵类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Undead>(300, 50, 80); } // 创建亡灵类怪物
     };
 
     class M_ElementFactory : public M_ParFactory // M_Element怪物类型的工厂，生产M_Element类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Element>(200, 80, 100); // 创建元素类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Element>(200, 80, 100); } // 创建元素类怪物
     };
 
     class M_MechanicFactory : public M_ParFactory // M_Mechanic怪物类型的工厂，生产M_Mechanic类型怪物
     {
     public:
-        shared_ptr<Monster> createMonster() override
-        {
-            return make_shared<M_Mechanic>(400, 0, 110); // 创建机械类怪物
-        }
+        shared_ptr<Monster> createMonster() const override { return make_shared<M_Mechanic>(400, 0, 110); } // 创建机械类怪物
     };
 
     // 全局函数实现
@@ -294,6 +234,7 @@ int main()
     shared_ptr<Monster> pM1 = myFactory.createMonster();
     shared_ptr<Monster> pM2 = M_ChildFactory2<M_Element>::createMonster(400, 0, 100);
     shared_ptr<Monster> pM3 = M_ChildFactory3::createMonster<M_Mechanic>(400, 0, 100);
+    shared_ptr<Monster> pM = getMonster<M_Mechanic>(400, 0, 100);
 #endif
 
 #if 1

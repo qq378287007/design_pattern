@@ -504,10 +504,7 @@ namespace ns2_1
                 m_SingleInstance = nullptr;
             }
         }
-        void Print()
-        {
-            cout << "实例内存地址: " << this << endl;
-        }
+        void Print() { cout << "实例内存地址: " << this << endl; }
     };
     SingleInstance *SingleInstance::m_SingleInstance = nullptr;
     mutex SingleInstance::m_Mutex;
@@ -532,21 +529,11 @@ namespace ns2_2
             return singleton;
         }
 
-        void print()
-        {
-            cout << "Hello World." << endl;
-        }
-
-        ~Singleton()
-        {
-            cout << __PRETTY_FUNCTION__ << endl;
-        }
+        void print() { cout << "Hello World." << endl; }
+        ~Singleton() { cout << __PRETTY_FUNCTION__ << endl; }
 
     private:
-        Singleton()
-        {
-            cout << __PRETTY_FUNCTION__ << endl;
-        }
+        Singleton() { cout << __PRETTY_FUNCTION__ << endl; }
     };
     shared_ptr<Singleton> Singleton::singleton = nullptr;
     mutex Singleton::singletonMutex;
@@ -561,19 +548,18 @@ namespace ns2_3
 
     private:
         Singleton() {}
-        ~Singleton() {}
+
+        // public:
+        //     ~Singleton() {}
 
     public:
-        void print()
-        {
-            cout << "Hello World." << endl;
-        }
+        void print() { cout << "Hello World." << endl; }
 
     public:
         static shared_ptr<Singleton> getSingleton()
         {
             call_once(singletonFlag, [&]
-                      { singleton = make_shared<Singleton>(); });
+                      { singleton.reset(new Singleton()); });
             return singleton;
         }
     };
@@ -595,74 +581,44 @@ namespace ns2_4
     class TestClass
     {
     public:
-        TestClass()
-        {
-            cout << "TestClass constructed!" << endl;
-        }
-
-        void print()
-        {
-            cout << "TestClass Address: " << this << endl;
-        }
+        TestClass() { cout << "TestClass constructed!" << endl; }
+        void print() { cout << "TestClass Address: " << this << endl; }
     };
 }
 
-/*
 namespace ns22222
 {
-
     class Single
     {
+    private:
+        Single() {}
+        //~Single() {}
+        static shared_ptr<Single> instance;
+        Single(const Single &);
+        Single &operator=(const Single &);
+
     public:
         static Single &getInstance()
         {
-            mutex mt;
-            if (instance.get() == NULL)
-            {
-                mt.lock();
-                // if (instance.get() == NULL)
-                //     instance.reset(new Single());
-                mt.unlock();
-            }
+            if (instance == nullptr)
+                instance.reset(new Single());
             return *instance;
         }
-
-    private:
-        Single() {}
-        ~Single() {}
-        static shared_ptr<Single> instance;
-        friend class shared_ptr<Single>;
-
-        Single(const Single &);
-        Single &operator=(const Single &);
     };
-
-    shared_ptr<Single> Single::instance = make_shared<Single>();
-
+    shared_ptr<Single> Single::instance = nullptr;
 
     class SingleObject
     {
-    private:
         static shared_ptr<SingleObject> instance;
-
         SingleObject() {}
-        ~SingleObject() {}
-        friend class shared_ptr<SingleObject>;
-
+        // public:
+        //~SingleObject() {}
     public:
-        static SingleObject &getInstance()
-        {
-            return *instance;
-        }
-        void showMessage()
-        {
-            cout << "Hello World!" << endl;
-        }
+        static shared_ptr<SingleObject> getInstance() { return instance; }
+        void showMessage() { cout << "Hello World!" << endl; }
     };
-    shared_ptr<SingleObject> SingleObject::instance = make_shared<SingleObject>();
-
+    shared_ptr<SingleObject> SingleObject::instance(new SingleObject());
 }
-*/
 
 int main()
 {
@@ -690,7 +646,7 @@ int main()
     GameConfig *g_gc2 = GameConfig::getInstance();
 #endif
 
-#if 1
+#if 0
     using namespace ns5;
     GameConfig2 *g_gc = GameConfig2::getInstance();
     GameConfig &g_gc2 = GameConfig::getInstance();
@@ -705,7 +661,7 @@ int main()
     SingleInstance::deleteInstance();
 #endif
 
-#if 0
+#if 1
     using namespace ns2_4;
     getInstance<TestClass>()->print();
     getInstance<TestClass>()->print();

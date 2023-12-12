@@ -42,13 +42,13 @@ namespace ns2
         virtual ~Fighter() {}
         void JN_Burn() // 技能“燃烧”
         {
-            if (canUseJN() == false) // 如果不能使用该技能，则直接返回
-                return;
+            if (canUseJN()) // 如果能使用该技能
+            {
+                effect_enemy(); // 对敌人产生的影响
+                effect_self();  // 对主角自身产生的影响
 
-            effect_enemy(); // 对敌人产生的影响
-            effect_self();  // 对主角自身产生的影响
-
-            play_effect(); // 播放技能“燃烧”的技能特效
+                play_effect(); // 播放技能“燃烧”的技能特效
+            }
         }
 
     private:
@@ -113,13 +113,9 @@ int main()
 
 #if 1
     using namespace ns2;
-    // shared_ptr<Fighter> fighter = make_shared<F_Warrior>(1000, 0, 200);
     shared_ptr<Fighter> fighter(new F_Warrior(1000, 0, 200));
     fighter->JN_Burn();
-
     cout << "-------------------------" << endl;
-
-    // fighter = make_shared<F_Mage>(800, 200, 300);
     fighter.reset(new F_Mage(800, 200, 300));
     fighter->JN_Burn();
 #endif

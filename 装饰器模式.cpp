@@ -17,36 +17,31 @@ namespace ns1
     class Control
     {
     public:
-        virtual void draw() const = 0;
+        virtual ~Control() {}
 
     public:
-        virtual ~Control() {}
+        virtual void draw() const = 0;
     };
 
     class ListCtrl : public Control
     {
     public:
-        void draw() const override
-        {
-            cout << "Draw Common List Controls!" << endl;
-        }
+        void draw() const override { cout << "Draw Common List Controls!" << endl; }
     };
 
     class Decorator : public Control
     {
+        shared_ptr<Control> m_control;
+
     public:
         Decorator(const shared_ptr<Control> &tmpctrl) : m_control(tmpctrl) {}
-        void draw() const override
-        {
-            m_control->draw();
-        }
-
-    private:
-        shared_ptr<Control> m_control;
+        void draw() const override { m_control->draw(); }
     };
 
     class BorderDec : public Decorator
     {
+        void drawBorder() const { cout << "bound box!" << endl; }
+
     public:
         BorderDec(const shared_ptr<Control> &tmpctrl) : Decorator(tmpctrl) {}
         void draw() const override
@@ -54,16 +49,12 @@ namespace ns1
             Decorator::draw();
             drawBorder();
         }
-
-    private:
-        void drawBorder() const
-        {
-            cout << "bound box!" << endl;
-        }
     };
 
     class VerScrollBarDec : public Decorator
     {
+        void drawVerScrollBar() const { cout << "Draw vertical scroll bar!" << endl; }
+
     public:
         VerScrollBarDec(const shared_ptr<Control> &tmpctrl) : Decorator(tmpctrl) {}
         void draw() const override
@@ -71,28 +62,18 @@ namespace ns1
             Decorator::draw();
             drawVerScrollBar();
         }
-
-    private:
-        void drawVerScrollBar() const
-        {
-            cout << "Draw vertical scroll bar!" << endl;
-        }
     };
 
     class HorScrollBarDec : public Decorator
     {
+        void drawHorScrollBar() const { cout << "Draw horizontal scroll bar!" << endl; }
+
     public:
         HorScrollBarDec(const shared_ptr<Control> &tmpctrl) : Decorator(tmpctrl) {}
         void draw() const override
         {
             Decorator::draw();
             drawHorScrollBar();
-        }
-
-    private:
-        void drawHorScrollBar() const
-        {
-            cout << "Draw horizontal scroll bar!" << endl;
         }
     };
 }
@@ -114,12 +95,11 @@ namespace ns2
 
     class Decorator : public Beverage // 抽象的装饰器类
     {
+        shared_ptr<Beverage> m_pbvg;
+
     public:
         Decorator(const shared_ptr<Beverage> &tmpbvg) : m_pbvg(tmpbvg) {}
         int getprice() const override { return m_pbvg->getprice(); }
-
-    private:
-        shared_ptr<Beverage> m_pbvg;
     };
 
     class SugarDec : public Decorator // 具体的“砂糖”装饰器类
@@ -139,14 +119,13 @@ namespace ns2
     class BubbleDec : public Decorator // 具体的“珍珠”装饰器类
     {
     public:
-        BubbleDec(const shared_ptr<Beverage> &tmpbvg) : Decorator(tmpbvg) {} // 构造函数
+        BubbleDec(const shared_ptr<Beverage> &tmpbvg) : Decorator(tmpbvg) {}
         int getprice() const override { return Decorator::getprice() + 2; }
     };
 }
 
 namespace ns3
 {
-
     class Shape
     {
     public:
@@ -157,19 +136,13 @@ namespace ns3
     class Rectangle : public Shape
     {
     public:
-        void draw() const override
-        {
-            cout << "Shape: Rectangle" << endl;
-        }
+        void draw() const override { cout << "Shape: Rectangle" << endl; }
     };
 
     class Circle : public Shape
     {
     public:
-        void draw() const override
-        {
-            cout << "Shape: Circle" << endl;
-        }
+        void draw() const override { cout << "Shape: Circle" << endl; }
     };
 
     class ShapeDecorator : public Shape
@@ -178,34 +151,24 @@ namespace ns3
         shared_ptr<Shape> decoratedShape;
 
     public:
-        ShapeDecorator(const shared_ptr<Shape> &s)
-        {
-            decoratedShape = s;
-        }
-        void draw() const override
-        {
-            decoratedShape->draw();
-        }
+        ShapeDecorator(const shared_ptr<Shape> &s) : decoratedShape(s) {}
+        void draw() const override { decoratedShape->draw(); }
     };
 
     class RedShapeDecorator : public ShapeDecorator
     {
+        void setRedBorder() const { cout << "Border Color: Red" << endl; }
+
     public:
         RedShapeDecorator(const shared_ptr<Shape> &s) : ShapeDecorator(s) {}
 
         void draw() const override
         {
-            ShapeDecorator::draw(); // decoratedShape->draw();
+            // ShapeDecorator::draw();
+            decoratedShape->draw();
             setRedBorder();
         }
-
-    private:
-        void setRedBorder() const
-        {
-            cout << "Border Color: Red" << endl;
-        }
     };
-
 }
 
 int main()
@@ -213,42 +176,41 @@ int main()
 #if 0
     using namespace ns1;
     //(1)创建一个又带边框，又带垂直滚动条的列表控件
-    shared_ptr<Control> plistctrl = make_shared<ListCtrl>();                       // 普通列表控件
-    shared_ptr<Decorator> plistctrl_b = make_shared<BorderDec>(plistctrl);         // 带边框的列表控件
-    shared_ptr<Control> plistctrl_b_v = make_shared<VerScrollBarDec>(plistctrl_b); // 带垂直滚动条又带边框的列表控件
+    shared_ptr<Control> plistctrl(new ListCtrl());                       // 普通列表控件
+    shared_ptr<Control> plistctrl_b(new BorderDec(plistctrl));           // 带边框的列表控件
+    shared_ptr<Control> plistctrl_b_v(new VerScrollBarDec(plistctrl_b)); // 带垂直滚动条又带边框的列表控件
     plistctrl_b_v->draw();
-
     cout << "-------------------------------" << endl;
-
     //(2)创建一个只带水平滚动条的列表控件
-    shared_ptr<Control> plistctrl2 = make_shared<ListCtrl>();                      // 普通列表控件
-    shared_ptr<Decorator> plistctrl2_h = make_shared<HorScrollBarDec>(plistctrl2); // 带水平滚动条的列表控件
+    shared_ptr<Control> plistctrl2(new ListCtrl());                    // 普通列表控件
+    shared_ptr<Control> plistctrl2_h(new HorScrollBarDec(plistctrl2)); // 带水平滚动条的列表控件
     plistctrl2_h->draw();
 #endif
 
-#if 1
+#if 0
     using namespace ns2;
-    shared_ptr<Beverage> pfruit = make_shared<FruitBeverage>();                            // 单纯水果饮料，10元
-    shared_ptr<Decorator> pfruit_addbubb = make_shared<BubbleDec>(pfruit);                 // 增加珍珠，增加2元
-    shared_ptr<Decorator> pfruit_addbubb_addsugar = make_shared<SugarDec>(pfruit_addbubb); // 增加砂糖，增加1元
-    cout << "last price: " << pfruit_addbubb_addsugar->getprice() << endl;                 // 最终价格
+    shared_ptr<Beverage> pfruit(new FruitBeverage());                           // 单纯水果饮料，10元
+    shared_ptr<Beverage> pfruit_addbubb(new BubbleDec(pfruit));                 // 增加珍珠，增加2元
+    shared_ptr<Beverage> pfruit_addbubb_addsugar(new SugarDec(pfruit_addbubb)); // 增加砂糖，增加1元
+    cout << "last price: " << pfruit_addbubb_addsugar->getprice() << endl;      // 最终价格
 #endif
 
 #if 1
     using namespace ns3;
-    auto circle = make_shared<Circle>();
+    shared_ptr<Shape> circle(new Circle());
     cout << "Circle with normal border" << endl;
     circle->draw();
 
-    auto redCircle = make_shared<RedShapeDecorator>(circle);
+    shared_ptr<Shape> redCircle(new RedShapeDecorator(circle));
     cout << "\nCircle of red border" << endl;
     redCircle->draw();
 
-    auto rectange = make_shared<Rectangle>();
-    auto redRectangle = make_shared<RedShapeDecorator>(rectange);
+    shared_ptr<Shape> rectange(new Rectangle());
+    shared_ptr<Shape> redRectangle(new RedShapeDecorator(rectange));
     cout << "\nRectangle of red border" << endl;
     redRectangle->draw();
 #endif
+
     cout << "Over!\n";
     return 0;
 }
